@@ -1,4 +1,6 @@
 /.idea/
 /.venv/
 /.env
+/tests/.env
+/tmp/
 __pycache__

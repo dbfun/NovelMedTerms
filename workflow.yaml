@@ -3,7 +3,7 @@ modules:
 
   fetcher:
     name: Модуль импорта статей
-    type: import
+    type: fetcher
     # Возможен импорт из нескольких источников. Реализован PubMed.
     stages:
       - type: "pubmed"
