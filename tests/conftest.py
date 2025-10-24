@@ -6,9 +6,12 @@ import os
 
 import pytest
 from dotenv import load_dotenv
+from sqlalchemy import event
+from sqlalchemy.orm import Session
 
+from src.container import container
 from src.orm import models
-from src.orm.database import get_engine, BaseModel
+from src.orm.database import BaseModel
 
 _ = models  # Защита от удаления линтером.
 
@@ -19,14 +22,70 @@ assert os.environ["APP_ENV"] == "testing"
 
 
 @pytest.fixture(scope="session")
-def engine():
-    return get_engine()
+def db_engine():
+    """Создаёт engine для тестовой БД."""
+    return container.db_engine()
 
 
 @pytest.fixture(scope="session")
-def tables(engine):
-    BaseModel.metadata.create_all(engine)
+def db_tables(db_engine):
+    """
+    Создаёт все таблицы перед тестами.
+    Удаляет после завершения всех тестов.
+    """
+    BaseModel.metadata.create_all(db_engine)
     try:
         yield
     finally:
-        BaseModel.metadata.drop_all(engine)
+        BaseModel.metadata.drop_all(db_engine)
+
+
+@pytest.fixture(scope="function")
+def db_session(db_engine, db_tables):
+    """
+    Создаёт транзакционную сессию для каждого теста.
+
+    Механизм:
+    1. Открывает connection и транзакцию
+    2. Создаёт session, привязанную к этой транзакции
+    3. После теста делает rollback
+    4. Каждый тест получает чистую БД
+
+    Основано на:
+    https://docs.sqlalchemy.org/en/20/orm/session_transaction.html#joining-a-session-into-an-external-transaction-such-as-for-test-suites
+    """
+    connection = db_engine.connect()
+    transaction = connection.begin()
+
+    session = Session(bind=connection, join_transaction_mode="create_savepoint")
+
+    # Отключаем автоматический commit/rollback для контроля транзакций
+    session.begin_nested()
+
+    @event.listens_for(session, "after_transaction_end")
+    def restart_savepoint(session, transaction):
+        """
+        Автоматически создаёт новый savepoint после каждого commit/rollback.
+        Без этого возникнет ошибка, если в коде дважды выполнить db_session.commit()
+        """
+        if transaction.nested and not transaction._parent.nested:
+            session.begin_nested()
+
+    try:
+        yield session
+    finally:
+        session.close()
+        transaction.rollback()
+        connection.close()
+
+
+@pytest.fixture(scope="function", autouse=True)
+def override_container_db_session(db_session):
+    """
+    Автоматически переопределяет db_session в контейнере для всех тестов.
+
+    Теперь при вызове container.db_session() будет возвращаться
+    транзакционная тестовая сессия вместо production версии.
+    """
+    with container.db_session.override(db_session):
+        yield

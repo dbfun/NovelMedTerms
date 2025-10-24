@@ -6,11 +6,9 @@ import os
 from dotenv import load_dotenv
 from sqlalchemy import inspect
 
-# Строку ниже - не удалять.
-# SQLAlchemy создаёт таблицы на основе содержимого Base.metadata.
-# А таблицы в это метаданные попадают только в момент определения классов моделей.
+from src.container import container
 from src.orm import models
-from src.orm.database import get_engine, BaseModel
+from src.orm.database import BaseModel
 
 _ = models  # Защита от удаления линтером.
 
@@ -19,19 +17,19 @@ assert os.environ["APP_ENV"] == "production"
 
 
 def drop_tables():
-    engine = get_engine()
+    engine = container.db_engine()
     BaseModel.metadata.drop_all(engine)
     print("✅ Таблицы удалены")
 
 
 def create_tables():
-    engine = get_engine()
+    engine = container.db_engine()
     BaseModel.metadata.create_all(engine)
     print("✅ Таблицы созданы")
 
 
 def check_tables():
-    engine = get_engine()
+    engine = container.db_engine()
 
     inspector = inspect(engine)
     tables = inspector.get_table_names()

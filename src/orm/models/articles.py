@@ -3,6 +3,7 @@ import datetime
 from sqlalchemy import Text, Index
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.orm import validates
+
 from src.orm.database import BaseModel
 
 
