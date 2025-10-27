@@ -16,13 +16,13 @@ from src.orm.database import (
 
 
 @contextmanager
-def get_db_session(session_factory: sessionmaker) -> Generator[Session, None, None]:
+def _get_db_session(session_factory: sessionmaker) -> Generator[Session, None, None]:
     """
     Context manager для безопасной работы с сессией БД.
 
     Автоматически:
     - Создаёт сессию
-    - Делает commit при успехе
+    - НЕ делает commit при успехе - чтобы не расходилось с тестами, в которых автоматический коммит не предусмотрен.
     - Делает rollback при ошибке
     - Закрывает сессию
 
@@ -35,8 +35,6 @@ def get_db_session(session_factory: sessionmaker) -> Generator[Session, None, No
     session = session_factory()
     try:
         yield session
-        # Коммит при успешном выполнении
-        session.commit()
     except Exception:
         # Откат транзакции при ошибке
         session.rollback()
@@ -63,10 +61,10 @@ class Container(containers.DeclarativeContainer):
         engine=db_engine,
     )
 
-    # В тестах идет замена.
+    # В тестах идет замена на сессию с откатом изменений.
     # @see conftest.override_container_db_session
     db_session = providers.Factory(
-        get_db_session,
+        _get_db_session,
         session_factory=db_session_factory,
     )
 
