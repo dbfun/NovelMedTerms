@@ -9,5 +9,5 @@ class PytestModule(Module):
     def __init__(self, param1: str):
         self.param1 = param1
 
-    def handle(self):
-        return "pytest result"
+    def handle(self) -> None:
+        pass

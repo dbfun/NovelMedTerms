@@ -3,12 +3,12 @@ import datetime
 import pytest
 
 from src.container import container
-from src.orm.models import Articles
+from src.orm.models import Article
 
 
 @pytest.fixture(scope="function")
-def valid_article():
-    return Articles(
+def valid_article() -> Article:
+    return Article(
         pmid="12345",
         authors="Test Author",
         title="Test Title",
@@ -32,7 +32,7 @@ class TestConftestDatabase:
 
         # Проверяем, что статья сохранилась в БД
         with container.db_session() as session:
-            saved_article = session.query(Articles).filter_by(pmid="12345").first()
+            saved_article = session.query(Article).filter_by(pmid="12345").first()
             assert saved_article is not None
             assert saved_article.title == "Test Title"
 
@@ -43,7 +43,7 @@ class TestConftestDatabase:
         """
 
         with container.db_session() as session:
-            saved_article = session.query(Articles).filter_by(pmid="12345").first()
+            saved_article = session.query(Article).filter_by(pmid="12345").first()
             assert saved_article is None
 
         self.test_store_in_db(valid_article)

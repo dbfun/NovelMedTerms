@@ -9,5 +9,5 @@ class PubMedFetcher(Module):
     def __init__(self, term: str):
         self.term = term
 
-    def handle(self):
+    def handle(self) -> None:
         pass

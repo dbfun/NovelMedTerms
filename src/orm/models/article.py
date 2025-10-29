@@ -7,7 +7,7 @@ from sqlalchemy.orm import validates
 from src.orm.database import BaseModel
 
 
-class Articles(BaseModel):
+class Article(BaseModel):
     __tablename__ = 'articles'
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -22,7 +22,7 @@ class Articles(BaseModel):
     )
 
     @validates('pmid')
-    def validate_pmid(self, key, value):
+    def validate_pmid(self, key, value) -> None:
         if not value or len(value.strip()) == 0:
             raise ValueError("PMID cannot be empty")
         if len(value) > 20:

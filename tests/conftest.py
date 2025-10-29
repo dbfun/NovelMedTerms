@@ -1,7 +1,3 @@
-"""
-Механика создания БД и ее очистки позаимствована из этого gist:
-https://gist.github.com/kissgyorgy/e2365f25a213de44b9a2?utm_source=chatgpt.com
-"""
 import os
 
 import pytest
@@ -32,6 +28,9 @@ def db_tables(db_engine):
     """
     Создаёт все таблицы перед тестами.
     Удаляет после завершения всех тестов.
+
+    Механика создания БД и ее очистки позаимствована из этого gist:
+    https://gist.github.com/kissgyorgy/e2365f25a213de44b9a2
     """
     BaseModel.metadata.create_all(db_engine)
     try:

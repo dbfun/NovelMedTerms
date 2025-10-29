@@ -36,6 +36,6 @@ def register_module(module: str, type: str):
     return decorator
 
 
-def get_module_class(module: str, type: str):
+def get_module_class(module: str, type: str) -> Type:
     """Получить класс модуля из реестра."""
     return _global_registry.get(module, type)

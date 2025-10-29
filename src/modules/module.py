@@ -5,6 +5,6 @@ class Module(ABC):
     """Абстрактный модуль"""
 
     @abstractmethod
-    def handle(self):
+    def handle(self) -> None:
         """Запуск модуля"""
         pass
