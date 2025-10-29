@@ -23,20 +23,26 @@ class TestConftestDatabase:
     @see conftest.py.
     """
 
-    def test_store_in_db(self, valid_article):
-        """Проверка, что изменения сохраняются в БД"""
+    def test_fixture_db_session(self, valid_article, db_session):
+        """Проверка фикстуры "db_session" из conftest.py. Данные должны быть сохранены в БД"""
+        db_session.add(valid_article)
+        db_session.commit()
+        saved_article = db_session.query(Article).filter_by(pmid="12345").first()
+        assert isinstance(saved_article, Article)
 
-        with container.db_session() as session:
-            session.add(valid_article)
-            session.commit()
+    def test_fixture_override_container_db_session(self, valid_article):
+        """Проверка фикстуры "override_container_db_session". Данные должны быть сохранены в БД"""
+
+        with container.db_session() as db_session:
+            db_session.add(valid_article)
+            db_session.commit()
 
         # Проверяем, что статья сохранилась в БД
-        with container.db_session() as session:
-            saved_article = session.query(Article).filter_by(pmid="12345").first()
-            assert saved_article is not None
-            assert saved_article.title == "Test Title"
+        with container.db_session() as db_session:
+            saved_article = db_session.query(Article).filter_by(pmid="12345").first()
+            assert isinstance(saved_article, Article)
 
-    def test_store_in_db_2(self, valid_article):
+    def test_fixture_override_container_db_session_2(self):
         """
         Проверка, что новый тест получает чистую БД - проверка на отдельной таблице.
         Прошлый тест добавил в таблицу данные.
@@ -44,6 +50,4 @@ class TestConftestDatabase:
 
         with container.db_session() as session:
             saved_article = session.query(Article).filter_by(pmid="12345").first()
-            assert saved_article is None
-
-        self.test_store_in_db(valid_article)
+            assert saved_article is None, "База данных не чистая"

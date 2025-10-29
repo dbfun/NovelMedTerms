@@ -1,8 +1,10 @@
 import os
 
 
-class DatabaseConfig():
+class DatabaseConfig:
+
     def db_url(self) -> str:
+        """Строка подключения к БД"""
         return (
             f"postgresql+psycopg://{os.environ['DB_USER']}:{os.environ['DB_PASSWORD']}"
             f"@{os.environ['DB_HOST']}:{os.environ['DB_PORT']}/{os.environ['DB_NAME']}"
