@@ -3,4 +3,5 @@
 /.env
 /tests/.env
 /tmp/
+/debug.py
 __pycache__

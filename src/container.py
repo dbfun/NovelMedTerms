@@ -9,6 +9,7 @@ from dependency_injector import containers, providers
 from sqlalchemy.orm import sessionmaker, Session
 
 from src.config.database import DatabaseConfig
+from src.modules.module_registry import get_module_class
 from src.orm.database import (
     create_engine_from_config,
     create_session_factory_from_engine,
@@ -66,6 +67,10 @@ class Container(containers.DeclarativeContainer):
     db_session = providers.Factory(
         _get_db_session,
         session_factory=db_session_factory,
+    )
+
+    module = providers.Factory(
+        lambda module, type, **kwargs: get_module_class(module, type)(**kwargs)
     )
 
 
