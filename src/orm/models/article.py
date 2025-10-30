@@ -11,7 +11,7 @@ class Article(BaseModel):
     __tablename__ = 'articles'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    pmid: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
+    pmcid: Mapped[str] = mapped_column(unique=True, index=True, nullable=True, comment="PMC")
     authors: Mapped[str] = mapped_column(Text, nullable=False)
     title: Mapped[str] = mapped_column(Text, nullable=False)
     abstract: Mapped[str] = mapped_column(Text, nullable=False)
@@ -21,10 +21,10 @@ class Article(BaseModel):
         Index('idx_pubdate', 'pubdate'),
     )
 
-    @validates('pmid')
-    def validate_pmid(self, key, value) -> None:
+    @validates('pmcid')
+    def validate_pmcid(self, key, value) -> None:
         if not value or len(value.strip()) == 0:
-            raise ValueError("PMID cannot be empty")
+            raise ValueError("PMC cannot be empty")
         if len(value) > 20:
-            raise ValueError("PMID too long")
+            raise ValueError("PMC too long")
         return value.strip()

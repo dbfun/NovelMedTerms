@@ -12,8 +12,8 @@ def mock_module(module_name: str, type_name: str, mock_class: Type):
     Временная подмена модуля в контейнере dependency_injector с поддержкой вложенных вызовов.
 
     Пример:
-        with mock_module("fetcher", "pubmed", MockPubMedFetcher):
-            module = container.module(module="fetcher", type="pubmed", term="test")
+        with mock_module("fetcher", "pubmed-central", MockPubMedFetcher):
+            module = container.module(module="fetcher", type="pubmed-central", term="test")
             assert isinstance(module, MockPubMedFetcher)
 
     После выхода из контекста оригинальный провайдер восстанавливается.

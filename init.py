@@ -12,9 +12,6 @@ from src.orm.database import BaseModel
 
 _ = models  # Защита от удаления линтером.
 
-load_dotenv()
-assert os.environ["APP_ENV"] == "production"
-
 
 def drop_tables():
     engine = container.db_engine()
@@ -45,6 +42,9 @@ def check_tables():
 
 
 if __name__ == "__main__":
+    load_dotenv()
+    assert os.environ["APP_ENV"] == "production"
+
     drop_tables()
     create_tables()
     check_tables()

@@ -9,7 +9,7 @@ from src.orm.models import Article
 @pytest.fixture(scope="function")
 def valid_article() -> Article:
     return Article(
-        pmid="12345",
+        pmcid="PMC12345",
         authors="Test Author",
         title="Test Title",
         abstract="Test Abstract",
@@ -27,7 +27,7 @@ class TestConftestDatabase:
         """Проверка фикстуры "db_session" из conftest.py. Данные должны быть сохранены в БД"""
         db_session.add(valid_article)
         db_session.commit()
-        saved_article = db_session.query(Article).filter_by(pmid="12345").first()
+        saved_article = db_session.query(Article).filter_by(pmcid="PMC12345").first()
         assert isinstance(saved_article, Article)
 
     def test_fixture_override_container_db_session(self, valid_article):
@@ -39,7 +39,7 @@ class TestConftestDatabase:
 
         # Проверяем, что статья сохранилась в БД
         with container.db_session() as db_session:
-            saved_article = db_session.query(Article).filter_by(pmid="12345").first()
+            saved_article = db_session.query(Article).filter_by(pmcid="PMC12345").first()
             assert isinstance(saved_article, Article)
 
     def test_fixture_override_container_db_session_2(self):
@@ -49,5 +49,5 @@ class TestConftestDatabase:
         """
 
         with container.db_session() as session:
-            saved_article = session.query(Article).filter_by(pmid="12345").first()
+            saved_article = session.query(Article).filter_by(pmcid="PMC12345").first()
             assert saved_article is None, "База данных не чистая"

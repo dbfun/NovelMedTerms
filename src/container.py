@@ -29,7 +29,7 @@ def _get_db_session(session_factory: sessionmaker) -> Generator[Session, None, N
 
     Example:
         with get_db_session() as session:
-            article = Articles(pmid="123", ...)
+            article = Articles(pmcid="PMC123", ...)
             session.add(article)
             # commit выполнится автоматически
     """

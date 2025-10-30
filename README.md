@@ -42,3 +42,27 @@ pytest
 
 ## Работа с системой
 
+### Запуск системы
+
+Сценарий использования:
+
+* скопировать файл `workflow.yaml` в каталог `workflows`
+* внести изменения в скопированный файл 
+* запустить систему
+
+Пример:
+
+```bash
+# Копирование workflow.yaml 
+cp workflow.yaml workflows/variant-1.yaml
+
+# Внесение изменений
+code workflows/variant-1.yaml
+
+# Активация venv
+source .venv/bin/activate
+
+# Запуск системы
+LOG_LEVEL=info python workflow.py workflows/variant-1.yaml
+```
+
