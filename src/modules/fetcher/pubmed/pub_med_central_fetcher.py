@@ -56,16 +56,29 @@ class PubMedCentralFetcher(Module):
                 with Entrez.efetch(db="pmc", id=batch_ids, rettype="medline", retmode="text") as fetch_handle:
                     records = Medline.parse(fetch_handle)
                     for rec in records:
-                        stmt = insert(Article).values(
-                            pmcid=rec.get("PMC"),
-                            title=rec.get("TI"),
-                            abstract=rec.get("AB"),
-                            authors=", ".join(rec.get("AU", [])),
-                            pubdate=self._parse_pubdate(rec.get("DP"))
-                        ).on_conflict_do_nothing(
-                            index_elements=["pmcid"]
-                        )
-                        session.execute(stmt)
+                        try:
+                            article = Article(
+                                pmcid=rec.get("PMC"),
+                                title=rec.get("TI"),
+                                abstract=rec.get("AB"),
+                                authors=", ".join(rec.get("AU", [])),
+                                pubdate=self._parse_pubdate(rec.get("DP")),
+                            )
+
+                            stmt = insert(Article).values(
+                                pmcid=article.pmcid,
+                                title=article.title,
+                                abstract=article.abstract,
+                                authors=article.authors,
+                                pubdate=article.pubdate
+                            ).on_conflict_do_nothing(index_elements=["pmcid"])
+
+                            session.execute(stmt)
+
+                        except ValueError as e:
+                            logging.warning(f"Пропускаем запись: {rec.get("PMC")} - {e}")
+                            continue
+
                 session.commit()
 
     @staticmethod

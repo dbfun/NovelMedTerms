@@ -12,4 +12,5 @@ module = container.module(
 )
 """
 from .fetcher.pubmed.pub_med_central_fetcher import PubMedCentralFetcher
+from .ner.pos_based_hybrid import PosBasedHybrid
 from .pytest.pytest_module import PytestModule

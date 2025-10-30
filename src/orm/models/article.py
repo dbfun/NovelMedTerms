@@ -25,6 +25,12 @@ class Article(BaseModel):
     def validate_pmcid(self, key, value) -> None:
         if not value or len(value.strip()) == 0:
             raise ValueError("PMC cannot be empty")
-        if len(value) > 20:
+        if len(value) > 50:
             raise ValueError("PMC too long")
         return value.strip()
+
+    @validates('abstract')
+    def validate_abstract(self, key, value) -> None:
+        if not value or len(value.strip()) == 0:
+            raise ValueError("Abstract cannot be empty")
+        return value

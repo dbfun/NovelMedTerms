@@ -26,7 +26,7 @@ class Workflow:
         )
 
     def load_workflow_from_file(self):
-        parser = argparse.ArgumentParser(description="Workflow file path")
+        parser = argparse.ArgumentParser()
         parser.add_argument("file", type=Path, help="Путь к файлу")
         self.args = parser.parse_args()
 
@@ -39,10 +39,11 @@ class Workflow:
         for stage in self.cfg.stages:
             logging.info(stage.name)
             for module in stage.modules:
+                params = module.params or {}
                 module_obj = container.module(
                     module=module.module,
                     type=module.type,
-                    **module.params
+                    **params
                 )
                 module_obj.handle()
 

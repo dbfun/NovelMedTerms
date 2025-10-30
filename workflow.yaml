@@ -14,17 +14,21 @@ stages:
         type: pubmed-central
         params:
           # Строка поиска по PubMed.
-          term: '(((calcification[Abstract]) AND cancer) AND breast) AND ("2015/01/01"[PubDate] : "2025/12/31"[PubDate])'
+          #          term: '(((calcification[Abstract]) AND cancer) AND breast) AND ("2015/01/01"[PubDate] : "2025/12/31"[PubDate])'
+          term: '(((calcification[Abstract]) AND cancer) AND breast) AND ("2003/01/01"[PubDate] : "2021/31/12"[PubDate])'
           # Лимит поиска
           retmax: 10000
 
-#  - name: Этап извлечения именованных сущностей
-#    # Возможна работа нескольких модулей.
-#    modules:
-#      - module: ner
-#        # Варианты: nltk, transformer
-#        type: nltk
-#
+  - name: Этап извлечения именованных сущностей
+    # Возможна работа нескольких модулей.
+    modules:
+      - module: ner
+        # Варианты: pos-based-hybrid, transformer
+        type: pos-based-hybrid
+        params:
+          stopwords:
+            - resources/dictionaries/stop-words/AidaStopWords.xlsx
+
 #  - name: Этап фильтрации по словарю
 #    # Возможна работа нескольких словарей.
 #    modules:
