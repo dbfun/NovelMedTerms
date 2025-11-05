@@ -98,16 +98,17 @@ class PosBasedHybrid(Module):
         text_len = len(text)
         term = ""
         start_pos = 0
+        word_count = 0
         is_term = False  # если в термине есть существительное или герундий, то это термин
         while char_pos < text_len:
             if text[char_pos].isalpha():
                 next_word = text[char_pos:].split()[0]
                 cleaned_word, end_of_term = self.clean_word(next_word)
+                stop_w = False
 
                 if term == "":
                     start_pos = char_pos
                     word_count = 0
-                stop_w = False
 
                 if self.is_term(cleaned_word):  # Надо раньше анализировать!!!
                     term = term + cleaned_word + " "
@@ -129,7 +130,6 @@ class PosBasedHybrid(Module):
                         self.add_term_if_valid(ret, start_pos, term, word_count)
                         term = ""
                         is_term = False
-                        stop_w = False
             char_pos += 1
 
         return ret
@@ -172,13 +172,13 @@ class PosBasedHybrid(Module):
         2. Содержит существительное (NN), иностранное слово (FW) или герундий (VBG)
 
         Args:
-            word: Слово для проверки
+            term: Слово для проверки
 
         Returns:
             True, если слово подходит для термина
         """
 
-        if (term.lower() in self.stop_words):
+        if term.lower() in self.stop_words:
             return False
 
         tokens = nltk.word_tokenize(term)
@@ -190,9 +190,10 @@ class PosBasedHybrid(Module):
             # Правильный вариант: "(or ... or ...) and ..."
             # В частности, "case control" попадает в термины.
 
-            if (self.valid_pos_tag(tag)):
+            if PosBasedHybrid.valid_pos_tag(tag):
                 return True
         return False
 
-    def valid_pos_tag(self, tag) -> bool:
+    @staticmethod
+    def valid_pos_tag(tag) -> bool:
         return ("NN" in tag) or ("FW" in tag) or ("VBG" in tag)
