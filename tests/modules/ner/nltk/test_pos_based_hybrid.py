@@ -10,7 +10,7 @@ from src.orm.models import Article, Term, TermMarkup
 
 class TestIsTerm:
     """
-    Тесты для метода is_term.
+    Тесты для метода _is_term.
 
     Примечание: мы мокаем nltk.pos_tag() вместо использования реального NLTK,
     потому что POS-tagging зависит от контекста и может давать разные результаты
@@ -51,7 +51,7 @@ class TestIsTerm:
     def test_positive_cases(self, mock_tokenize, mock_pos_tag, module_missing_stopwords, word, tag):
         """Слова с допустимыми POS-тегами считаются терминами."""
         TestIsTerm.mock_pos(mock_tokenize, mock_pos_tag, word, tag)
-        assert module_missing_stopwords.is_term(word) is True
+        assert module_missing_stopwords._is_term(word) is True
 
     # Негативные случаи (не термин)
     @pytest.mark.parametrize("word,tag", [
@@ -68,7 +68,7 @@ class TestIsTerm:
     def test_negative_cases(self, mock_tokenize, mock_pos_tag, module_missing_stopwords, word, tag):
         """Слова с недопустимыми POS-тегами не считаются терминами."""
         TestIsTerm.mock_pos(mock_tokenize, mock_pos_tag, word, tag)
-        assert module_missing_stopwords.is_term(word) is False
+        assert module_missing_stopwords._is_term(word) is False
 
     # Стоп-слова
     @pytest.mark.parametrize("word,tag", [
@@ -80,7 +80,7 @@ class TestIsTerm:
     def test_stopwords(self, mock_tokenize, mock_pos_tag, module_with_stopwords, word, tag):
         """Стоп-слова не считаются терминами независимо от регистра."""
         TestIsTerm.mock_pos(mock_tokenize, mock_pos_tag, word, tag)
-        assert module_with_stopwords.is_term(word) is False
+        assert module_with_stopwords._is_term(word) is False
 
     # Комбинированные случаи
     @patch("nltk.pos_tag")
@@ -89,11 +89,11 @@ class TestIsTerm:
         """Если хотя бы одно слово в compound имеет тег NN — считается термином."""
         mock_tokenize.return_value = ["multi", "word"]
         mock_pos_tag.return_value = [("multi", "JJ"), ("word", "NN")]
-        assert module_missing_stopwords.is_term("multi-word") is True
+        assert module_missing_stopwords._is_term("multi-word") is True
 
 
 class TestCleanWord:
-    """TDD тесты для метода clean_word."""
+    """TDD тесты для метода _clean_word."""
 
     @pytest.fixture
     def module(self):
@@ -152,7 +152,7 @@ class TestCleanWord:
     )
     def test_clean_word_various_cases(self, module, input_word, expected):
         """Проверяет корректность очистки слова в разных сценариях."""
-        assert module.clean_word(input_word) == expected
+        assert module._clean_word(input_word) == expected
 
 
 class TestExtractTermsFromText:
@@ -221,7 +221,7 @@ class TestExtractTermsFromText:
             {"text": "calcification", "word_count": 1, "start_pos": 1378, "end_pos": 1391}
         ]
 
-        actual = module.extract_terms_from_text(text)
+        actual = module._extract_terms_from_text(text)
 
         assert expected == actual
 

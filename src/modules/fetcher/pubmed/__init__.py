@@ -6,14 +6,10 @@ from dateutil import parser
 from sqlalchemy.dialects.postgresql import insert
 
 from src.config.ncbi import NcbiConfig
-from src.modules.module import Module
-from src.modules.module_registry import register_module
+from src.modules.module import Module, ModuleInfo
 from src.orm.models import Article
 
-logger = logging.getLogger("pubmed-central")
 
-
-@register_module(module="fetcher", type="pubmed-central")
 class PubMedCentralFetcher(Module):
     """
     Модуль для получения статей из PubMed Central.
@@ -31,10 +27,15 @@ class PubMedCentralFetcher(Module):
     BATCH_SIZE = 100
 
     def __init__(self, term: str, retmax: int):
+        self.logger = logging.getLogger(PubMedCentralFetcher.info().name())
         self.term = term
         self.retmax = retmax
         Entrez.email = NcbiConfig.email()
         Entrez.api_key = NcbiConfig.api_key()
+
+    @staticmethod
+    def info() -> ModuleInfo:
+        return ModuleInfo(module="fetcher", type="pubmed-central")
 
     def handle(self) -> None:
         from src.container import container
@@ -50,11 +51,11 @@ class PubMedCentralFetcher(Module):
             # Загрузка данных батчами
             # Если id="12528561", то PMC="PMC12528561" - по факту.
 
-            logger.info(f"Найдено статей: {len(id_list)}")
+            self.logger.info(f"Найдено статей: {len(id_list)}")
 
             for i in range(0, len(id_list), self.BATCH_SIZE):
                 batch_ids = id_list[i:i + self.BATCH_SIZE]
-                logger.debug(f"Пакетная загрузка: {i}-{min(i + self.BATCH_SIZE, len(id_list))} из {len(id_list)}")
+                self.logger.debug(f"Пакетная загрузка: {i}-{min(i + self.BATCH_SIZE, len(id_list))} из {len(id_list)}")
                 with Entrez.efetch(db="pmc", id=batch_ids, rettype="medline", retmode="text") as fetch_handle:
                     records = Medline.parse(fetch_handle)
                     for rec in records:
@@ -78,7 +79,7 @@ class PubMedCentralFetcher(Module):
                             session.execute(stmt)
 
                         except ValueError as e:
-                            logger.warning(f"Пропускаем запись: {rec.get("PMC")} - {e}")
+                            self.logger.warning(f"Пропускаем запись: {rec.get("PMC")} - {e}")
                             continue
 
                 session.commit()

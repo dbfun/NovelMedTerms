@@ -1,5 +1,7 @@
 from typing import Dict, Tuple, Type
 
+from src.modules.module import Module
+
 
 class ModuleRegistry:
     """Реестр всех зарегистрированных модулей."""
@@ -7,7 +9,7 @@ class ModuleRegistry:
     def __init__(self):
         self._registry: Dict[Tuple[str, str], Type] = {}
 
-    def register(self, module: str, type: str, module_class: Type) -> None:
+    def register(self, module: str, type: str, module_class: Type[Module]) -> None:
         """Зарегистрировать модуль."""
         key = (module, type)
         if key in self._registry:
@@ -26,14 +28,8 @@ class ModuleRegistry:
 _global_registry = ModuleRegistry()
 
 
-def register_module(module: str, type: str):
-    """Декоратор для регистрации модуля."""
-
-    def decorator(cls):
-        _global_registry.register(module, type, cls)
-        return cls
-
-    return decorator
+def register_module(module: Type[Module]):
+    _global_registry.register(module.info().module, module.info().type, module)
 
 
 def get_module_class(module: str, type: str) -> Type:

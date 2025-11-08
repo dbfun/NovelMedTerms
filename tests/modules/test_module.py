@@ -2,7 +2,7 @@ import pytest
 
 from mock_module import mock_module
 from src.container import container
-from src.modules.module import Module
+from src.modules.module import Module, ModuleInfo
 from src.modules.pytest.pytest_module import PytestModule
 
 
@@ -50,11 +50,19 @@ class TestModule:
             def handle(self):
                 pass
 
+            @staticmethod
+            def info() -> ModuleInfo:
+                pass
+
         class MockPytestModule2(Module):
             def __init__(self):
                 pass
 
             def handle(self):
+                pass
+
+            @staticmethod
+            def info() -> ModuleInfo:
                 pass
 
         # Подмена модуля
