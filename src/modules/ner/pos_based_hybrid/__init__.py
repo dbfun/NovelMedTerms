@@ -1,11 +1,13 @@
 import logging
 
 import nltk
+from cachetools import LFUCache, cached
+from sqlalchemy.orm import Session
 
 from src.dictionaries.stop_words import StopWords
 from src.modules.module import Module
 from src.modules.module_registry import register_module
-from src.orm.models import Article, Term
+from src.orm.models import Article, Term, TermMarkup
 
 logger = logging.getLogger("pos-based-hybrid")
 
@@ -21,6 +23,7 @@ class PosBasedHybrid(Module):
     """
 
     MIN_TERM_LENGTH = 3  # Минимальная длина термина в символах
+    term_id_cache = LFUCache(maxsize=10000)
 
     def __init__(self, stopwords: list = None):
         """
@@ -58,16 +61,18 @@ class PosBasedHybrid(Module):
                 # Извлекаем термины из аннотации
                 terms = self.extract_terms_from_text(article.abstract)
 
-                # Сохраняем термины в БД
+                # Сохраняем термины и разметку статей по терминам в БД
                 for term_data in terms:
-                    term = Term(
-                        term_text=term_data["text"],
-                        word_count=term_data["word_count"],
+                    term_id = self.get_or_create_term_id(session, term_data)
+
+                    term_markup = TermMarkup(
+                        term_id=term_id,
                         article_id=article.id,
+                        module_name="pos-based-hybrid",
                         start_char=term_data["start_pos"],
                         end_char=term_data["end_pos"]
                     )
-                    session.add(term)
+                    session.add(term_markup)
                     term_count += 1
 
                 processed_count += 1
@@ -85,6 +90,17 @@ class PosBasedHybrid(Module):
                     f"Обработано статей: {processed_count} из {len(articles)}, извлечено терминов: {term_count}")
 
             logger.info(f"Обработка завершена. Всего извлечено терминов: {term_count}")
+
+    @cached(cache=term_id_cache, key=lambda self, session, term_data: term_data["text"])
+    def get_or_create_term_id(self, session: Session, term_data) -> int:
+        term = session.query(Term).filter_by(term_text=term_data["text"]).first()
+
+        if not term:
+            term = Term(term_text=term_data["text"], word_count=term_data["word_count"])
+            session.add(term)
+            session.flush()
+
+        return term.id
 
     def extract_terms_from_text(self, text: str) -> list[dict]:
         """

@@ -5,7 +5,7 @@ import pytest
 
 from src.container import container
 from src.modules.ner.pos_based_hybrid import PosBasedHybrid
-from src.orm.models import Article, Term
+from src.orm.models import Article, Term, TermMarkup
 
 
 class TestIsTerm:
@@ -230,8 +230,11 @@ class TestHandle:
     """
     Интеграционный тест для метода handle.
 
-    Проверяет основной путь: чтение статей из БД, извлечение терминов,
-    сохранение терминов в БД.
+    Проверяет основной путь:
+        1. чтение статей из БД
+        2. извлечение терминов
+        3. сохранение терминов в БД
+        4. сохранение разметки статьи по терминам в БД
     """
 
     @pytest.fixture
@@ -251,35 +254,55 @@ class TestHandle:
         mock_pos_tag.side_effect = lambda tokens: [(t, "NN") for t in tokens]
 
         with container.db_session() as session:
-            # Подготовка: создаем тестовую статью
-            article = Article(
-                pmcid="PMC12345",
+            # Подготовка: создаем тестовые статьи
+            article1 = Article(
+                pmcid="PMC01",
                 authors="Test Author",
                 title="Test Title",
                 abstract="Cancer treatment is effective therapy.",
                 pubdate=date(2021, 1, 1)
             )
-            session.add(article)
+            article2 = Article(
+                pmcid="PMC02",
+                authors="Test Author",
+                title="Test Title",
+                abstract="Cancer treatment for elderly patients living alone.",
+                pubdate=date(2021, 1, 1)
+            )
+            session.add_all([article1, article2])
             session.commit()
-            session.refresh(article)
-            article_id = article.id
 
-            # Выполняем извлечение терминов
+            article_ids = [article1.id, article2.id]
+
+            # Запуск извлечения терминов
             module.handle()
 
-            # Проверяем: термины должны быть сохранены в БД
-            terms = session.query(Term).filter(Term.article_id == article_id).order_by(Term.id).all()
+            # Проверка: термины должны быть сохранены в БД
+            term = session.query(Term).order_by(Term.id).all()
+            assert len(term) == 3, "Термины должны быть извлечены и сохранены"
 
-            # Проверяем, что термины были найдены и сохранены
-            assert len(terms) == 2, "Термины должны быть извлечены и сохранены"
+            assert term[0].term_text == 'cancer treatment'
+            assert term[0].word_count == 2
+            assert term[1].term_text == 'effective therapy'
+            assert term[1].word_count == 2
+            assert term[2].term_text == 'elderly patients living alone'
+            assert term[2].word_count == 4
 
-            # Проверяем структуру сохраненных терминов
-            assert terms[0].term_text == 'cancer treatment'
-            assert terms[0].word_count == 2
-            assert terms[0].start_char == 0
-            assert terms[0].end_char == 16
+            # Проверка: разметка статей по терминам
+            term_markups = session.query(TermMarkup).filter(TermMarkup.article_id == article_ids[0]).order_by(
+                TermMarkup.id).all()
+            assert len(term_markups) == 2, "Разметка не сохранена"
 
-            assert terms[1].term_text == 'effective therapy'
-            assert terms[1].word_count == 2
-            assert terms[1].start_char == 20
-            assert terms[1].end_char == 37
+            assert term_markups[0].start_char == 0
+            assert term_markups[0].end_char == 16
+            assert term_markups[1].start_char == 20
+            assert term_markups[1].end_char == 37
+
+            term_markups = session.query(TermMarkup).filter(TermMarkup.article_id == article_ids[1]).order_by(
+                TermMarkup.id).all()
+            assert len(term_markups) == 2, "Разметка не сохранена"
+
+            assert term_markups[0].start_char == 0
+            assert term_markups[0].end_char == 16
+            assert term_markups[1].start_char == 21
+            assert term_markups[1].end_char == 50

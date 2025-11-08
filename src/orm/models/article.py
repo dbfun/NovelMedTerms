@@ -1,10 +1,17 @@
 import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Text, Index
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.orm import validates
 
 from src.orm.database import BaseModel
+
+# Обход проблемы циклического импорта:
+# ImportError: cannot import name 'TermMarkup' from partially initialized module 'src.orm.models' (most likely due to a circular import)
+# SQLAlchemy использует строки (Mapped["Term"]), а этот импорт нужен для подсветки в IDE.
+if TYPE_CHECKING:
+    from src.orm.models import TermMarkup
 
 
 class Article(BaseModel):
@@ -16,6 +23,9 @@ class Article(BaseModel):
     title: Mapped[str] = mapped_column(Text, nullable=False)
     abstract: Mapped[str] = mapped_column(Text, nullable=False)
     pubdate: Mapped[datetime.date] = mapped_column(nullable=False)
+
+    markups: Mapped[list["TermMarkup"]] = relationship("TermMarkup", back_populates="article",
+                                                       cascade="all, delete-orphan")
 
     __table_args__ = (
         Index('idx_pubdate', 'pubdate'),
