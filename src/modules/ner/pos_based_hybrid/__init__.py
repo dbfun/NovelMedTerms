@@ -7,6 +7,8 @@ from src.modules.module import Module
 from src.modules.module_registry import register_module
 from src.orm.models import Article, Term
 
+logger = logging.getLogger("pos-based-hybrid")
+
 
 @register_module(module="ner", type="pos-based-hybrid")
 class PosBasedHybrid(Module):
@@ -42,7 +44,7 @@ class PosBasedHybrid(Module):
         with container.db_session() as session:
             # Получаем все статьи из БД
             articles = session.query(Article).all()
-            logging.info(f"Начало обработки {len(articles)} статей")
+            logger.info(f"Найдено статей: {len(articles)}")
 
             term_count = 0
             processed_count = 0
@@ -50,7 +52,7 @@ class PosBasedHybrid(Module):
             for article in articles:
                 # Пропускаем статьи без аннотации
                 if not article.abstract or len(article.abstract.strip()) == 0:
-                    logging.debug(f"Статья {article.id} пропущена: отсутствует abstract")
+                    logger.debug(f"Статья {article.id} пропущена: отсутствует abstract")
                     continue
 
                 # Извлекаем термины из аннотации
@@ -70,15 +72,19 @@ class PosBasedHybrid(Module):
 
                 processed_count += 1
 
-                # Периодический commit для больших объёмов
+                # Периодический commit для больших объемов
                 if processed_count % 100 == 0:
                     session.commit()
-                    logging.info(
-                        f"Обработано статей: {processed_count}/{len(articles)}, извлечено терминов: {term_count}")
+                    logger.debug(
+                        f"Обработано статей: {processed_count} из {len(articles)}, извлечено терминов: {term_count}")
 
             # Финальный commit
-            session.commit()
-            logging.info(f"Обработка завершена. Всего извлечено терминов: {term_count}")
+            if processed_count % 100 != 0:
+                session.commit()
+                logger.debug(
+                    f"Обработано статей: {processed_count} из {len(articles)}, извлечено терминов: {term_count}")
+
+            logger.info(f"Обработка завершена. Всего извлечено терминов: {term_count}")
 
     def extract_terms_from_text(self, text: str) -> list[dict]:
         """

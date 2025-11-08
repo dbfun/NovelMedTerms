@@ -7,9 +7,16 @@ stages:
 
 
   - name: Этап импорта статей
-    # Возможен импорт из нескольких источников, а также запуск одного модуля несколько раз с разными параметрами.
-    # Реализован PubMed Central.
     modules:
+      # Очистка базы данных от прошлого запуска
+      - module: cleaner
+        type: database
+        params:
+          models:
+            - Article
+      # Импорт статей
+      # Возможен запуск одного модуля несколько раз с разными параметрами
+      # Реализован PubMed Central
       - module: fetcher
         type: pubmed-central
         params:
@@ -20,8 +27,14 @@ stages:
           retmax: 10000
 
   - name: Этап извлечения именованных сущностей
-    # Возможна работа нескольких модулей.
+    # Возможна работа нескольких модулей
     modules:
+      # Очистка базы данных от прошлого запуска
+      - module: cleaner
+        type: database
+        params:
+          models:
+            - Term
       - module: ner
         # Варианты: pos-based-hybrid, transformer
         type: pos-based-hybrid
@@ -30,7 +43,7 @@ stages:
             - resources/dictionaries/stop-words/AidaStopWords.xlsx
 
 #  - name: Этап фильтрации по словарю
-#    # Возможна работа нескольких словарей.
+#    # Возможна работа нескольких словарей
 #    modules:
 #      - module: filter
 #        # Варианты: mesh, umls, snomed.

@@ -21,7 +21,7 @@ class BaseModel(DeclarativeBase):
 # Удобно для работы в коде, особенно с with
 
 def create_engine_from_config(config: DatabaseConfig) -> Engine:
-    """Создаёт engine из конфига."""
+    """Создает engine из конфига."""
     return create_engine(
         url=config.db_url(),
         pool_size=5,
@@ -31,7 +31,7 @@ def create_engine_from_config(config: DatabaseConfig) -> Engine:
 
 
 def create_session_factory_from_engine(engine: Engine) -> sessionmaker:
-    """Создаёт session factory из engine."""
+    """Создает session factory из engine."""
     return sessionmaker(
         bind=engine,
         autocommit=False,

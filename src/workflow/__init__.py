@@ -1,7 +1,7 @@
 """Схема workflow.yaml для типизации"""
 from typing import List, Optional, Dict, Any
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field
 
 
 class Experiment(BaseModel):

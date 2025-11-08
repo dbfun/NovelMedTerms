@@ -1,4 +1,5 @@
 import os
+import datetime
 
 import pytest
 from dotenv import load_dotenv
@@ -8,6 +9,7 @@ from sqlalchemy.orm import Session
 from src.container import container
 from src.orm import models
 from src.orm.database import BaseModel
+from src.orm.models import Article
 
 _ = models  # Защита от удаления линтером.
 
@@ -88,3 +90,13 @@ def override_container_db_session(db_session):
     """
     with container.db_session.override(db_session):
         yield
+
+@pytest.fixture(scope="function")
+def valid_article() -> Article:
+    return Article(
+        pmcid="PMC12345",
+        authors="Test Author",
+        title="Test Title",
+        abstract="Test Abstract",
+        pubdate=datetime.date.today()
+    )

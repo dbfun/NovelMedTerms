@@ -6,6 +6,8 @@ import nltk
 import pandas as pd
 from pandas import DataFrame
 
+logger = logging.getLogger("stop-words")
+
 
 class StopWords:
     """
@@ -36,22 +38,22 @@ class StopWords:
 
         nltk_stopwords = set(nltk.corpus.stopwords.words("english"))
         self.stop_words.update(nltk_stopwords)
-        logging.info(f"Загружено {len(nltk_stopwords)} стоп-слов из NLTK")
+        logger.info(f"Загружено {len(nltk_stopwords)} стоп-слов из NLTK")
 
         # Загружаем стоп-слова из файлов
         for file_path in self.file_paths:
             if not file_path.exists():
-                logging.warning(f"Файл не найден: {file_path}")
+                logger.warning(f"Файл не найден: {file_path}")
                 continue
 
             try:
                 words = self._load_from_file(file_path)
                 self.stop_words.update(words)
-                logging.info(f"Загружено {len(words)} стоп-слов из {file_path.name}")
+                logger.info(f"Загружено {len(words)} стоп-слов из {file_path.name}")
             except Exception as e:
-                logging.error(f"Ошибка при загрузке {file_path}: {e}")
+                logger.error(f"Ошибка при загрузке {file_path}: {e}")
 
-        logging.info(f"Всего загружено стоп-слов: {len(self.stop_words)}")
+        logger.info(f"Всего загружено стоп-слов: {len(self.stop_words)}")
         return self.stop_words
 
     def _load_from_file(self, file_path: Path) -> Set[str]:

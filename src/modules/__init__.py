@@ -1,5 +1,7 @@
 """
-Импорт всех модулей в реестр.
+Регистрация модулей.
+
+При каждом "import" запускается декоратор "@register_module", который регистрирует модуль.
 
 Следующий код не будет работать без этого файла:
 
@@ -11,6 +13,7 @@ module = container.module(
     term="filter",
 )
 """
-from .fetcher.pubmed.pub_med_central_fetcher import PubMedCentralFetcher
+from .cleaner.database import CleanerDatabase
+from .fetcher.pubmed import PubMedCentralFetcher
 from .ner.pos_based_hybrid import PosBasedHybrid
 from .pytest.pytest_module import PytestModule

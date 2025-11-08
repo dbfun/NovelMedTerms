@@ -1,14 +1,14 @@
 import datetime
 from unittest.mock import patch, MagicMock
 
-from src.modules.fetcher.pubmed.pub_med_central_fetcher import PubMedCentralFetcher
+from src.modules.fetcher.pubmed import PubMedCentralFetcher
 from src.orm.models import Article
 
 
 class TestPubMedFetcher:
 
-    @patch("src.modules.fetcher.pubmed.pub_med_central_fetcher.Medline")
-    @patch("src.modules.fetcher.pubmed.pub_med_central_fetcher.Entrez")
+    @patch("src.modules.fetcher.pubmed.Medline")
+    @patch("src.modules.fetcher.pubmed.Entrez")
     def test_handle(self, mock_entrez, mock_medline, db_session):
         """Проверка, что модуль получает статьи и сохраняет их в БД"""
 

@@ -1,20 +1,5 @@
-import datetime
-
-import pytest
-
 from src.container import container
 from src.orm.models import Article
-
-
-@pytest.fixture(scope="function")
-def valid_article() -> Article:
-    return Article(
-        pmcid="PMC12345",
-        authors="Test Author",
-        title="Test Title",
-        abstract="Test Abstract",
-        pubdate=datetime.date.today()
-    )
 
 
 class TestConftestDatabase:

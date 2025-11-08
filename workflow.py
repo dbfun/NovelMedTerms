@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 from src.container import container
 from src.workflow import Config
 
+logger = logging.getLogger("workflow")
 
 class Workflow:
     def __init__(self):
@@ -22,7 +23,7 @@ class Workflow:
         log_level = os.getenv("LOG_LEVEL", "WARNING").upper()
         logging.basicConfig(
             level=getattr(logging, log_level, logging.INFO),
-            format="%(levelname)s: %(message)s"
+            format="%(levelname)s\t%(name)s: %(message)s"
         )
 
     def load_workflow_from_file(self):
@@ -34,10 +35,10 @@ class Workflow:
             self.cfg = Config(**yaml.safe_load(f))
 
     def run(self):
-        logging.info(self.cfg.experiment.description)
+        logger.info(self.cfg.experiment.description)
 
         for stage in self.cfg.stages:
-            logging.info(stage.name)
+            logger.info(stage.name)
             for module in stage.modules:
                 params = module.params or {}
                 module_obj = container.module(
