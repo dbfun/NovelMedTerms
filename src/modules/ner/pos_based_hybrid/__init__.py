@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from src.dictionaries.stop_words import StopWords
 from src.modules.module import Module, ModuleInfo
-from src.orm.models import Article, Term, TermMarkup
+from src.orm.models import Article, Term, ArticleTermAnnotation
 
 
 class PosBasedHybrid(Module):
@@ -47,6 +47,8 @@ class PosBasedHybrid(Module):
         from src.container import container
 
         with container.db_session() as session:
+            module_id = self._register_module_in_db(session)
+
             # Получаем все статьи из БД
             articles = session.query(Article).all()
             self.logger.info(f"Найдено статей: {len(articles)}")
@@ -67,14 +69,14 @@ class PosBasedHybrid(Module):
                 for term_data in terms:
                     term_id = self._get_or_create_term_id(session, term_data)
 
-                    term_markup = TermMarkup(
+                    article_term_annotation = ArticleTermAnnotation(
                         term_id=term_id,
                         article_id=article.id,
-                        module_name="pos-based-hybrid",
+                        module_id=module_id,
                         start_char=term_data["start_pos"],
                         end_char=term_data["end_pos"]
                     )
-                    session.add(term_markup)
+                    session.add(article_term_annotation)
                     term_count += 1
 
                 processed_count += 1

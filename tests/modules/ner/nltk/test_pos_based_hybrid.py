@@ -5,7 +5,7 @@ import pytest
 
 from src.container import container
 from src.modules.ner.pos_based_hybrid import PosBasedHybrid
-from src.orm.models import Article, Term, TermMarkup
+from src.orm.models import Article, Term, ArticleTermAnnotation
 
 
 class TestIsTerm:
@@ -289,20 +289,20 @@ class TestHandle:
             assert term[2].word_count == 4
 
             # Проверка: разметка статей по терминам
-            term_markups = session.query(TermMarkup).filter(TermMarkup.article_id == article_ids[0]).order_by(
-                TermMarkup.id).all()
-            assert len(term_markups) == 2, "Разметка не сохранена"
+            article_term_annotations = session.query(ArticleTermAnnotation).filter(ArticleTermAnnotation.article_id == article_ids[0]).order_by(
+                ArticleTermAnnotation.id).all()
+            assert len(article_term_annotations) == 2, "Разметка не сохранена"
 
-            assert term_markups[0].start_char == 0
-            assert term_markups[0].end_char == 16
-            assert term_markups[1].start_char == 20
-            assert term_markups[1].end_char == 37
+            assert article_term_annotations[0].start_char == 0
+            assert article_term_annotations[0].end_char == 16
+            assert article_term_annotations[1].start_char == 20
+            assert article_term_annotations[1].end_char == 37
 
-            term_markups = session.query(TermMarkup).filter(TermMarkup.article_id == article_ids[1]).order_by(
-                TermMarkup.id).all()
-            assert len(term_markups) == 2, "Разметка не сохранена"
+            article_term_annotations = session.query(ArticleTermAnnotation).filter(ArticleTermAnnotation.article_id == article_ids[1]).order_by(
+                ArticleTermAnnotation.id).all()
+            assert len(article_term_annotations) == 2, "Разметка не сохранена"
 
-            assert term_markups[0].start_char == 0
-            assert term_markups[0].end_char == 16
-            assert term_markups[1].start_char == 21
-            assert term_markups[1].end_char == 50
+            assert article_term_annotations[0].start_char == 0
+            assert article_term_annotations[0].end_char == 16
+            assert article_term_annotations[1].start_char == 21
+            assert article_term_annotations[1].end_char == 50

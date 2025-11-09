@@ -1,6 +1,13 @@
 from abc import ABC, abstractmethod
 
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+from src.orm.models.module import Module as DbModule
+
+
+class Module(BaseModel):
+    __tablename__ = "modules"
 
 
 class ModuleInfo(BaseModel):
@@ -9,6 +16,7 @@ class ModuleInfo(BaseModel):
 
     def name(self) -> str:
         return f"{self.module}-{self.type}"
+
 
 class Module(ABC):
     """Абстрактный модуль"""
@@ -23,3 +31,15 @@ class Module(ABC):
     def handle(self) -> None:
         """Запуск модуля"""
         pass
+
+    def _register_module_in_db(self, session: Session) -> int:
+        """Регистрация модуля в БД"""
+        name = self.info().name()
+        module = session.query(DbModule).filter_by(name=name).first()
+
+        if not module:
+            module = DbModule(name=name)
+            session.add(module)
+            session.flush()
+
+        return module.id

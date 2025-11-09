@@ -8,30 +8,32 @@ from sqlalchemy.orm import validates
 from src.orm.database import BaseModel
 
 # Обход проблемы циклического импорта:
-# ImportError: cannot import name 'TermMarkup' from partially initialized module 'src.orm.models' (most likely due to a circular import)
+# ImportError: cannot import name 'ArticleTermAnnotations' from partially initialized module 'src.orm.models' (most likely due to a circular import)
 # SQLAlchemy использует строки (Mapped["Term"]), а этот импорт нужен для подсветки в IDE.
 if TYPE_CHECKING:
-    from src.orm.models import TermMarkup
+    from src.orm.models import ArticleTermAnnotation
 
 
 class Article(BaseModel):
-    __tablename__ = 'articles'
+    __tablename__ = "articles"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    pmcid: Mapped[str] = mapped_column(unique=True, index=True, nullable=True, comment="PMC")
-    authors: Mapped[str] = mapped_column(Text, nullable=False)
-    title: Mapped[str] = mapped_column(Text, nullable=False)
-    abstract: Mapped[str] = mapped_column(Text, nullable=False)
-    pubdate: Mapped[datetime.date] = mapped_column(nullable=False)
+    pmcid: Mapped[str] = mapped_column(unique=True, index=True, nullable=True, comment="Идентификатор PMCID")
+    title: Mapped[str] = mapped_column(Text, nullable=False, comment="Название статьи")
+    authors: Mapped[str] = mapped_column(Text, nullable=False, comment="Список авторов")
+    abstract: Mapped[str] = mapped_column(Text, nullable=False, comment="Аннотация")
+    pubdate: Mapped[datetime.date] = mapped_column(nullable=False, comment="Дата публикации")
 
-    markups: Mapped[list["TermMarkup"]] = relationship("TermMarkup", back_populates="article",
-                                                       cascade="all, delete-orphan")
+    # Связи с другими таблицами БД
+    annotations: Mapped[list["ArticleTermAnnotation"]] = relationship("ArticleTermAnnotation", back_populates="article",
+                                                                      cascade="all, delete-orphan")
 
     __table_args__ = (
-        Index('idx_pubdate', 'pubdate'),
+        Index("idx_pubdate", "pubdate"),
+        {"comment": "Научные статьи"}
     )
 
-    @validates('pmcid')
+    @validates("pmcid")
     def validate_pmcid(self, key, value) -> None:
         if not value or len(value.strip()) == 0:
             raise ValueError("PMC cannot be empty")
@@ -39,7 +41,7 @@ class Article(BaseModel):
             raise ValueError("PMC too long")
         return value.strip()
 
-    @validates('abstract')
+    @validates("abstract")
     def validate_abstract(self, key, value) -> None:
         if not value or len(value.strip()) == 0:
             raise ValueError("Abstract cannot be empty")
