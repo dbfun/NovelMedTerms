@@ -14,8 +14,8 @@ module = container.module(
 )
 """
 from src.modules.module_registry import register_module
-
 from .cleaner.database import CleanerDatabase
+from .dictionary.mesh import DictionaryMesh
 from .fetcher.pubmed import PubMedCentralFetcher
 from .ner.pos_based_hybrid import PosBasedHybrid
 from .pytest.pytest_module import PytestModule
@@ -24,3 +24,4 @@ register_module(CleanerDatabase)
 register_module(PubMedCentralFetcher)
 register_module(PosBasedHybrid)
 register_module(PytestModule)
+register_module(DictionaryMesh)

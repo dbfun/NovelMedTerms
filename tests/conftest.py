@@ -47,10 +47,14 @@ def db_session(db_engine, db_tables):
     Создаёт транзакционную сессию для каждого теста.
 
     Механизм:
-    1. Открывает connection и транзакцию
-    2. Создаёт session, привязанную к этой транзакции
-    3. После теста делает rollback
-    4. Каждый тест получает чистую БД
+        1. Открывает connection и транзакцию
+        2. Создаёт session, привязанную к этой транзакции
+        3. После теста делает rollback
+        4. Каждый тест получает чистую БД
+
+    Использование:
+        * В тестах: использовать фикстуру `db_session`
+        * В рабочем коде: использовать `with container.db_session() as session`
 
     Основано на:
     https://docs.sqlalchemy.org/en/20/orm/session_transaction.html#joining-a-session-into-an-external-transaction-such-as-for-test-suites

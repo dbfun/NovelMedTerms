@@ -42,12 +42,12 @@ stages:
           stopwords:
             - resources/dictionaries/stop-words/AidaStopWords.xlsx
 
-#  - name: Этап фильтрации по словарю
-#    # Возможна работа нескольких словарей
-#    modules:
-#      - module: filter
-#        # Варианты: mesh, umls, snomed.
-#        type: mesh
+  - name: Этап поиска в словаре
+    # Возможна работа нескольких словарей
+    modules:
+      - module: dictionary
+        # Варианты: mesh, umls, snomed.
+        type: mesh
 #
 #
 #  - name: Этап вывода результатов

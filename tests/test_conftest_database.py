@@ -16,7 +16,11 @@ class TestConftestDatabase:
         assert isinstance(saved_article, Article)
 
     def test_fixture_override_container_db_session(self, valid_article):
-        """Проверка фикстуры "override_container_db_session". Данные должны быть сохранены в БД"""
+        """
+        Проверка фикстуры "override_container_db_session".
+        Проверяемая конструкция, которая используется в коде: container.db_session()
+        Данные должны быть сохранены в БД
+        """
 
         with container.db_session() as db_session:
             db_session.add(valid_article)
@@ -30,6 +34,7 @@ class TestConftestDatabase:
     def test_fixture_override_container_db_session_2(self):
         """
         Проверка, что новый тест получает чистую БД - проверка на отдельной таблице.
+        Проверяемая конструкция, которая используется в коде: container.db_session()
         Прошлый тест добавил в таблицу данные.
         """
 
