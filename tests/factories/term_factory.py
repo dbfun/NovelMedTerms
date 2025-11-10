@@ -6,6 +6,12 @@ from src.orm.models import Term
 
 
 class TermFactory(SQLAlchemyModelFactory):
+    """
+    Фабрика для создания Term
+
+    Документация: https://factoryboy.readthedocs.io/en/stable/orms.html#module-factory.alchemy
+    """
+
     class Meta:
         model = Term
         sqlalchemy_session_factory = lambda: container.db_session()

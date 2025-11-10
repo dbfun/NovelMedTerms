@@ -46,3 +46,14 @@ class Article(BaseModel):
         if not value or len(value.strip()) == 0:
             raise ValueError("Abstract cannot be empty")
         return value
+
+    def __str__(self):
+
+        id = self.id
+        pmcid = self.pmcid
+        title = self.title
+        authors = self.authors
+        abstract = self.abstract
+        pubdate = self.pubdate
+
+        return f"{id=}\n{pmcid=}\n{title=}\n{authors=}\n{abstract=}\n{pubdate=}"

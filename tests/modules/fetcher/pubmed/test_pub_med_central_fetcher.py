@@ -1,5 +1,5 @@
 import datetime
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 from src.modules.fetcher.pubmed import PubMedCentralFetcher
 from src.orm.models import Article
@@ -26,8 +26,8 @@ class TestPubMedFetcher:
             }
         ]
 
-        retmax=100
-        term="term"
+        retmax = 100
+        term = "term"
 
         # Запуск модуля
         module = PubMedCentralFetcher(term=term, retmax=retmax)

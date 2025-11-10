@@ -8,6 +8,12 @@ from src.orm.models import Article
 
 
 class ArticleFactory(SQLAlchemyModelFactory):
+    """
+    Фабрика для создания Article
+
+    Документация: https://factoryboy.readthedocs.io/en/stable/orms.html#module-factory.alchemy
+    """
+
     class Meta:
         model = Article
         sqlalchemy_session_factory = lambda: container.db_session()

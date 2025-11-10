@@ -11,7 +11,7 @@ class NcbiConfig:
     @staticmethod
     def api_key() -> str:
         """
-        Не обязательно. API ключ нужен для увеличения лимитов.
+        Не обязательно. API ключ для увеличения лимитов запросов.
         Ключ можно получить тут: https://account.ncbi.nlm.nih.gov/settings/
 
         E-utils users are allowed 3 requests/second without an API key.

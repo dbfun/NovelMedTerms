@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy import ForeignKey, UniqueConstraint, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.orm.database import BaseModel
@@ -12,6 +12,7 @@ class TermDictionaryRef(BaseModel):
                                          comment="Термин")
     dictionary_id: Mapped[int] = mapped_column(ForeignKey("dictionaries.id", ondelete="CASCADE"), nullable=False,
                                                comment="Словарь")
+    ref_id: Mapped[str] = mapped_column(Text, nullable=True, comment="Идентификатор термина в словаре (например, CUI)")
 
     __table_args__ = (
         UniqueConstraint("term_id", "dictionary_id"),

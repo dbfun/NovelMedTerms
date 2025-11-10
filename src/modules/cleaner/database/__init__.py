@@ -4,6 +4,7 @@ from src.modules.module import Module, ModuleInfo
 from src.orm import models
 from src.orm.database import BaseModel
 
+
 class CleanerDatabase(Module):
 
     def __init__(self, models: list):

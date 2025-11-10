@@ -23,6 +23,7 @@ mygene==3.2.2
 nltk==3.9.2
 numpy==2.3.4
 openpyxl==3.1.5
+owlready2==0.48
 packaging==25.0
 pandas==2.3.3
 platformdirs==4.5.0

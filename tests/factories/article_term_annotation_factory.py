@@ -7,6 +7,12 @@ from src.orm.models import ArticleTermAnnotation
 
 
 class ArticleTermAnnotationFactory(SQLAlchemyModelFactory):
+    """
+    Фабрика для создания ArticleTermAnnotation
+
+    Документация: https://factoryboy.readthedocs.io/en/stable/orms.html#module-factory.alchemy
+    """
+
     class Meta:
         model = ArticleTermAnnotation
         sqlalchemy_session_factory = lambda: container.db_session()

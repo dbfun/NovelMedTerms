@@ -1,5 +1,5 @@
-import os
 import datetime
+import os
 
 import pytest
 from dotenv import load_dotenv
@@ -94,6 +94,7 @@ def override_container_db_session(db_session):
     """
     with container.db_session.override(db_session):
         yield
+
 
 @pytest.fixture(scope="function")
 def valid_article() -> Article:

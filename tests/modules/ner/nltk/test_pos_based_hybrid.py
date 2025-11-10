@@ -3,7 +3,6 @@ from unittest.mock import patch
 
 import pytest
 
-from src.container import container
 from src.modules.ner.pos_based_hybrid import PosBasedHybrid
 from src.orm.models import Article, Term, ArticleTermAnnotation
 
@@ -288,7 +287,8 @@ class TestHandle:
         assert term[2].word_count == 4
 
         # Проверка: разметка статей по терминам
-        article_term_annotations = db_session.query(ArticleTermAnnotation).filter(ArticleTermAnnotation.article_id == article_ids[0]).order_by(
+        article_term_annotations = db_session.query(ArticleTermAnnotation).filter(
+            ArticleTermAnnotation.article_id == article_ids[0]).order_by(
             ArticleTermAnnotation.id).all()
         assert len(article_term_annotations) == 2, "Разметка не сохранена"
 
@@ -297,7 +297,8 @@ class TestHandle:
         assert article_term_annotations[1].start_char == 20
         assert article_term_annotations[1].end_char == 37
 
-        article_term_annotations = db_session.query(ArticleTermAnnotation).filter(ArticleTermAnnotation.article_id == article_ids[1]).order_by(
+        article_term_annotations = db_session.query(ArticleTermAnnotation).filter(
+            ArticleTermAnnotation.article_id == article_ids[1]).order_by(
             ArticleTermAnnotation.id).all()
         assert len(article_term_annotations) == 2, "Разметка не сохранена"
 
