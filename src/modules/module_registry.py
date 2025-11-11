@@ -10,14 +10,30 @@ class ModuleRegistry:
         self._registry: Dict[Tuple[str, str], Type] = {}
 
     def register(self, module: str, type: str, module_class: Type[Module]) -> None:
-        """Зарегистрировать модуль."""
+        """
+        Зарегистрировать модуль.
+
+        Args:
+            module: модуль
+            type: тип
+            module_class: Python-класс модуля
+        """
         key = (module, type)
         if key in self._registry:
             raise ValueError(f"Модуль ({module}, {type}) уже зарегистрирован")
         self._registry[key] = module_class
 
     def get(self, module: str, type: str) -> Type:
-        """Получить класс модуля."""
+        """
+        Получить Python-класс модуля.
+
+        Args:
+            module: модуль
+            type: тип
+
+        Returns:
+            Python-класс модуля
+        """
         key = (module, type)
         if key not in self._registry:
             raise KeyError(f"Модуль ({module}, {type}) не зарегистрирован")

@@ -37,7 +37,7 @@ class TestPubMedFetcher:
         mock_entrez.esearch.assert_called_once_with(db="pmc", term=term, retmax=retmax)
         mock_entrez.efetch.assert_called_once_with(db="pmc", id=["12345"], rettype="medline", retmode="text")
 
-        # Проверяем, что статья записалась в БД
+        # Проверка, что статья записалась в БД
         saved_article = db_session.query(Article).filter_by(pmcid="PMC12345").first()
         assert isinstance(saved_article, Article)
         assert saved_article.title == "Test Title"

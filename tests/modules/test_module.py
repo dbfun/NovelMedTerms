@@ -77,6 +77,6 @@ class TestModule:
 
             assert isinstance(module, MockPytestModule1)
 
-        # После выхода из контекста оригинальный модуль восстановлен
+        # После выхода из контекста оригинальный модуль должен быть восстановлен
         module = container.module(module="pytest", type="pytest", param1="value1")
         assert isinstance(module, PytestModule)

@@ -12,7 +12,10 @@ class NcbiConfig:
     def api_key() -> str:
         """
         Не обязательно. API ключ для увеличения лимитов запросов.
-        Ключ можно получить тут: https://account.ncbi.nlm.nih.gov/settings/
+        Ключ можно получить после регистрации тут: https://account.ncbi.nlm.nih.gov/settings/
+
+        О лимитах из документации
+        -------------------------
 
         E-utils users are allowed 3 requests/second without an API key.
         Create an API key to increase your e-utils limit to 10 requests/second.

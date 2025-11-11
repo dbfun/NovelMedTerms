@@ -45,6 +45,7 @@ class TestMeSH:
         ],
     )
     def test_search(self, search_term, expected_result):
+        """Тестирование механизма поиска в базе MeSH"""
         dictionary = MeSH()
         result = dictionary.search(search_term)
         assert result == expected_result

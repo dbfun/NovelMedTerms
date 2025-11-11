@@ -24,9 +24,14 @@ class PubMedCentralFetcher(Module):
     https://www.ncbi.nlm.nih.gov/books/NBK25499/table/chapter4.T._valid_values_of__retmode_and/?report=objectonly
     """
 
-    BATCH_SIZE = 100
+    BATCH_SIZE: int = 100
 
     def __init__(self, term: str, retmax: int):
+        """
+        Args:
+            term: строка поиска по PubMed Central
+            retmax: лимит поиска
+        """
         self.logger = logging.getLogger(PubMedCentralFetcher.info().name())
         self.term = term
         self.retmax = retmax
@@ -38,20 +43,20 @@ class PubMedCentralFetcher(Module):
         return ModuleInfo(module="fetcher", type="pubmed-central")
 
     def handle(self) -> None:
+        """Запуск импорта статей"""
         from src.container import container
 
         with container.db_session() as session:
 
             # Поиск статей по термину
-
             with Entrez.esearch(db="pmc", term=self.term, retmax=self.retmax) as search_handle:
                 record = Entrez.read(search_handle)
                 id_list = record.get("IdList", [])
 
+            self.logger.info(f"Найдено статей: {len(id_list)}")
+
             # Загрузка данных батчами
             # Если id="12528561", то PMC="PMC12528561" - по факту.
-
-            self.logger.info(f"Найдено статей: {len(id_list)}")
 
             for i in range(0, len(id_list), self.BATCH_SIZE):
                 batch_ids = id_list[i:i + self.BATCH_SIZE]
@@ -95,7 +100,7 @@ class PubMedCentralFetcher(Module):
             dt = parser.parse(dp_value, fuzzy=True, default=datetime.datetime(1900, 1, 1))
             return datetime.date(dt.year, dt.month, dt.day)
         except Exception:
-            # fallback — только год
+            # В случае ошибки пробуем получить хотя бы год
             parts = dp_value.split()
             if parts and parts[0].isdigit():
                 return datetime.date(int(parts[0]), 1, 1)

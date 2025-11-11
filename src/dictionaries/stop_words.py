@@ -14,17 +14,30 @@ class StopWords:
     Загрузчик стоп-слов из файлов Excel и CSV.
 
     Поддерживает:
-    - Множественные файлы
-    - Форматы: .xlsx, .xls, .csv
-    - Множественные листы в Excel
-    - Автоматическая очистка и нормализация слов
+        - Множественные файлы
+        - Форматы: .xlsx, .xls, .csv
+        - Множественные листы в Excel
+        - Автоматическая очистка и нормализация слов
     """
 
     def __init__(self, file_paths: Union[str, Path, List[Union[str, Path]]] = None):
+        """
+        Args:
+            file_paths: путь (или список) к файлу со стоп-словами
+        """
         self.file_paths = self._normalize_paths(file_paths)
         self.stop_words: Set[str] = set()
 
     def _normalize_paths(self, file_paths: Union[str, Path, List[Union[str, Path]], None]) -> List[Path]:
+        """
+        Приведение пути (путей) к файлам в формат списка путей.
+
+        Args:
+            file_paths: путь (пути) к файлу (файлам)
+
+        Returns:
+            Список путей
+        """
         if file_paths is None:
             return []
 
@@ -34,6 +47,12 @@ class StopWords:
         return [Path(p) for p in file_paths]
 
     def load(self) -> Set[str]:
+        """
+        Получить список стоп-слов из nltk и файлов
+
+        Returns:
+            Список стоп-слов
+        """
         self.stop_words = set()
 
         nltk_stopwords = set(nltk.corpus.stopwords.words("english"))
@@ -57,6 +76,15 @@ class StopWords:
         return self.stop_words
 
     def _load_from_file(self, file_path: Path) -> Set[str]:
+        """
+        Загрузить список стоп-слов из файла.
+
+        Args:
+            file_path: путь к файлу
+
+        Returns:
+            Список стоп-слов
+        """
         suffix = file_path.suffix.lower()
 
         if suffix in [".xlsx", ".xls"]:
@@ -67,6 +95,15 @@ class StopWords:
             raise ValueError(f"Неподдерживаемый формат файла: {suffix}")
 
     def _load_from_excel(self, file_path: Path) -> Set[str]:
+        """
+        Загрузить список стоп-слов из Excel-файла.
+
+        Args:
+            file_path: путь к файлу
+
+        Returns:
+            Список стоп-слов
+        """
         words = set()
 
         # Читаем все листы
@@ -80,6 +117,15 @@ class StopWords:
         return words
 
     def _load_from_csv(self, file_path: Path) -> Set[str]:
+        """
+        Загрузить список стоп-слов из CSV-файла.
+
+        Args:
+            file_path: путь к файлу
+
+        Returns:
+            Список стоп-слов
+        """
         words = set()
 
         # Читаем CSV без заголовка
@@ -103,7 +149,7 @@ class StopWords:
 
     def _clean_word(self, word: str) -> str:
         """
-        Очищает и нормализует слово.
+        Очистка и нормализация слова.
 
         Args:
             word: Исходное слово
@@ -115,14 +161,20 @@ class StopWords:
         cleaned = "".join(c for c in word if c.isalpha() or c.isspace())
 
         # Приводим к нижнему регистру и удаляем лишние пробелы
-        cleaned = cleaned.lower().strip()
-
-        return cleaned
+        return cleaned.lower().strip()
 
     def __len__(self) -> int:
-        """Возвращает количество загруженных стоп-слов."""
+        """Количество загруженных стоп-слов"""
         return len(self.stop_words)
 
     def __contains__(self, word: str) -> bool:
-        """Проверяет, является ли слово стоп-словом."""
+        """
+        Проверка на стоп-слово
+
+        Args:
+            word: слово для проверки
+
+        Returns:
+            Признак стоп-слова
+        """
         return self._clean_word(word) in self.stop_words

@@ -1,5 +1,6 @@
 """
 Точка входа для запуска workflow.
+Подробная информация находится в README.md
 """
 import argparse
 import logging
@@ -14,19 +15,24 @@ from src.workflow import Config
 
 logger = logging.getLogger("workflow")
 
-class Workflow:
-    def __init__(self):
-        self.setup_log_level()
-        self.load_workflow_from_file()
 
-    def setup_log_level(self):
+class Workflow:
+    """Класс для запуска workflow из файла workflow.yml"""
+
+    def __init__(self):
+        self._setup_log_level()
+        self._load_workflow_from_file()
+
+    def _setup_log_level(self):
+        """Настройка уровня и формата журналирования"""
         log_level = os.getenv("LOG_LEVEL", "WARNING").upper()
         logging.basicConfig(
             level=getattr(logging, log_level, logging.INFO),
             format="%(levelname)s\t%(name)s: %(message)s"
         )
 
-    def load_workflow_from_file(self):
+    def _load_workflow_from_file(self):
+        """Чтение управляющей последовательности из файла workflow.yml"""
         parser = argparse.ArgumentParser()
         parser.add_argument("file", type=Path, help="Путь к файлу")
         self.args = parser.parse_args()
@@ -35,6 +41,7 @@ class Workflow:
             self.cfg = Config(**yaml.safe_load(f))
 
     def run(self):
+        """Запуск последовательности стадий"""
         logger.info(self.cfg.experiment.description)
 
         for stage in self.cfg.stages:

@@ -31,7 +31,7 @@ def _get_db_session(session_factory: sessionmaker) -> Generator[Session, None, N
         with get_db_session() as session:
             article = Articles(pmcid="PMC123", ...)
             session.add(article)
-            # commit выполнится автоматически
+            # commit НЕ выполняется автоматически
     """
     session = session_factory()
     try:

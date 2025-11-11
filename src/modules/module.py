@@ -6,15 +6,13 @@ from sqlalchemy.orm import Session
 from src.orm.models.module import Module as DbModule
 
 
-class Module(BaseModel):
-    __tablename__ = "modules"
-
-
 class ModuleInfo(BaseModel):
+    """Информация о модуле. Служит для идентификации модуля в системе."""
     module: str
     type: str
 
     def name(self) -> str:
+        """Название модуля в виде строки"""
         return f"{self.module}-{self.type}"
 
 
@@ -33,7 +31,15 @@ class Module(ABC):
         pass
 
     def _register_module_in_db(self, session: Session) -> int:
-        """Регистрация модуля в БД"""
+        """
+        Регистрация модуля в БД.
+
+        Args:
+            session: сессия SQLAlchemy
+
+        Returns:
+            id модуля
+        """
         name = self.info().name()
         module = session.query(DbModule).filter_by(name=name).first()
 

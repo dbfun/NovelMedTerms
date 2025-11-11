@@ -26,7 +26,7 @@ class PosBasedHybrid(Module):
         Инициализация модуля.
 
         Args:
-            stopwords: Список путей к файлам со списками стоп-слов.
+            stopwords: список путей к файлам со списками стоп-слов.
         """
 
         self.logger = logging.getLogger(PosBasedHybrid.info().name())
@@ -96,7 +96,16 @@ class PosBasedHybrid(Module):
             self.logger.info(f"Обработка завершена. Всего извлечено терминов: {term_count}")
 
     @cached(cache=term_id_cache, key=lambda self, session, term_data: term_data["text"])
-    def _get_or_create_term_id(self, session: Session, term_data) -> int:
+    def _get_or_create_term_id(self, session: Session, term_data: dict) -> int:
+        """
+        Получить id термина, а если его нет - создать.
+        Args:
+            session: сессия SQLAlchemy
+            term_data: данные о термине
+
+        Returns:
+            id термина
+        """
         term = session.query(Term).filter_by(term_text=term_data["text"]).first()
 
         if not term:
@@ -111,7 +120,7 @@ class PosBasedHybrid(Module):
         Извлекает термины из текста.
 
         Args:
-            text: Текст для анализа
+            text: текст для анализа
 
         Returns:
             Список словарей с данными о терминах:
@@ -171,10 +180,10 @@ class PosBasedHybrid(Module):
         Очищает слово от окружающих символов.
 
         Args:
-            word: Слово для очистки
+            word: слово для очистки
 
         Returns:
-            Кортеж (слово без окружающих символов, признак "конец термина")
+            кортеж (слово без окружающих символов, признак "конец термина")
         """
         word = word.strip().lower()
         word_len = len(word)  # длина слова с окружающими символами
@@ -198,7 +207,7 @@ class PosBasedHybrid(Module):
         2. Содержит существительное (NN), иностранное слово (FW) или герундий (VBG)
 
         Args:
-            term: Слово для проверки
+            term: слово для проверки
 
         Returns:
             True, если слово подходит для термина

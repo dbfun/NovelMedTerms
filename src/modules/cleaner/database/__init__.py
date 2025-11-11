@@ -6,8 +6,15 @@ from src.orm.database import BaseModel
 
 
 class CleanerDatabase(Module):
+    """
+    Модуль очистки базы данных.
+    """
 
     def __init__(self, models: list):
+        """
+        Args:
+            models: список моделей для очистки
+        """
         self.logger = logging.getLogger(CleanerDatabase.info().name())
         self.models = models
 
@@ -16,6 +23,7 @@ class CleanerDatabase(Module):
         return ModuleInfo(module="cleaner", type="database")
 
     def handle(self):
+        """Запуск очистки"""
         from src.container import container
 
         with container.db_session() as session:

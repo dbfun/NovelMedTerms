@@ -6,8 +6,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.orm.database import BaseModel
 
 # Обход проблемы циклического импорта:
-# ImportError: cannot import name 'ArticleTermAnnotations' from partially initialized module 'src.orm.models' (most likely due to a circular import)
-# SQLAlchemy использует строки (Mapped["Term"]), а этот импорт нужен для подсветки в IDE.
 if TYPE_CHECKING:
     from src.orm.models import ArticleTermAnnotation
 

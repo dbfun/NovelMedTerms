@@ -28,8 +28,8 @@ def db_engine():
 @pytest.fixture(scope="session")
 def db_tables(db_engine):
     """
-    Создаёт все таблицы перед тестами.
-    Удаляет после завершения всех тестов.
+    Создает все таблицы перед тестами.
+    Удаляет все таблицы после завершения всех тестов.
 
     Механика создания БД и ее очистки позаимствована из этого gist:
     https://gist.github.com/kissgyorgy/e2365f25a213de44b9a2
@@ -44,7 +44,7 @@ def db_tables(db_engine):
 @pytest.fixture(scope="function")
 def db_session(db_engine, db_tables):
     """
-    Создаёт транзакционную сессию для каждого теста.
+    Создает транзакционную сессию для каждого теста.
 
     Механизм:
         1. Открывает connection и транзакцию
@@ -98,6 +98,7 @@ def override_container_db_session(db_session):
 
 @pytest.fixture(scope="function")
 def valid_article() -> Article:
+    """Валидная модель статьи"""
     return Article(
         pmcid="PMC12345",
         authors="Test Author",
