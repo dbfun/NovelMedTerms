@@ -1,46 +1,29 @@
 import logging
-from dataclasses import dataclass
-from pathlib import Path
 from sqlite3 import OperationalError
 from typing import Optional
 
-from owlready2 import default_world, get_ontology
+import owlready2
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm.session import Session
 
+from src.modules.dictionary import TermDTO, Umls
 from src.modules.module import Module, ModuleInfo
 from src.orm.models import Term, TermDictionaryRef, Dictionary
 
 
-@dataclass
-class TermDTO:
+class MeSH(Umls):
     """
-    Data Transfer Object для терминов из словаря
+    Вспомогательный класс для работы с MeSH.
     """
-    ref_id: str
-
-
-class MeSH:
-    """
-    Вспомогательный класс для работы с MeSH через библиотеку owlready2.
-
-    Документация: https://owlready2.readthedocs.io/en/latest/pymedtermino2.html
-    """
-
-    # Загрузка словаря в библиотеку owlready2.
-    filename = Path("resources/dictionaries/umls/pym.sqlite3")
-    if not filename.exists():
-        raise FileNotFoundError(f"Файл {filename} должен быть создан скриптом init.py. См. README.md")
-
-    default_world.set_backend(filename=filename)
-    onto = get_ontology("http://PYM/").load()
-    dict = onto["MSH"]
 
     def name(self) -> str:
         return 'MeSH (Medical Subject Headings) thesaurus'
 
+    def dict(self) -> owlready2.pymedtermino2.model.MetaConcept:
+        return self.onto["MSH"]
+
     def search(self, term: str) -> Optional[TermDTO]:
-        for concept in self.dict.search(term):
+        for concept in self.dict().search(term):
             # Проверка на точное совпадение - не нужна, так как
             # "Heart Attack" возвращает "Myocardial Infarction",
             # что значит, что термин известен системе. Возвращаем первое совпадение.
