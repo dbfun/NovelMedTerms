@@ -2,7 +2,6 @@ import logging
 from sqlite3 import OperationalError
 from typing import Optional
 
-import owlready2
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm.session import Session
 
@@ -19,8 +18,8 @@ class MeSH(Umls):
     def name(self) -> str:
         return 'MeSH (Medical Subject Headings) thesaurus'
 
-    def dict(self) -> owlready2.pymedtermino2.model.MetaConcept:
-        return self.onto["MSH"]
+    def dict(self):
+        return self._onto["MSH"]
 
     def search(self, term: str) -> Optional[TermDTO]:
         for concept in self.dict().search(term):

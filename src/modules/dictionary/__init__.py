@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
-import owlready2
 from owlready2 import default_world, get_ontology
 
 
@@ -22,13 +21,25 @@ class Umls(ABC):
     Документация: https://owlready2.readthedocs.io/en/latest/pymedtermino2.html
     """
 
-    # Загрузка словаря в библиотеку owlready2.
-    filename = Path("resources/dictionaries/umls/pym.sqlite3")
-    if not filename.exists():
-        raise FileNotFoundError(f"Файл {filename} должен быть создан скриптом init.py. См. README.md")
+    _onto = None
 
-    default_world.set_backend(filename=filename)
-    onto = get_ontology("http://PYM/").load()
+    def __init__(self):
+        self._load_dict()
+
+    @classmethod
+    def _load_dict(cls):
+        """
+        Загрузка словаря в библиотеку owlready2. Выполняется только 1 раз.
+        """
+        if cls._onto is not None:
+            return
+
+        filename = Path("resources/dictionaries/umls/pym.sqlite3")
+        if not filename.exists():
+            raise FileNotFoundError(f"Файл {filename} должен быть создан скриптом init.py. См. README.md")
+
+        default_world.set_backend(filename=filename)
+        cls._onto = get_ontology("http://PYM/").load()
 
     @abstractmethod
     def name(self) -> str:
@@ -36,7 +47,7 @@ class Umls(ABC):
         pass
 
     @abstractmethod
-    def dict(self) -> owlready2.pymedtermino2.model.MetaConcept:
+    def dict(self):
         """Ссылка на словарь"""
         pass
 
