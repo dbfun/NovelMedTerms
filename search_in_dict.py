@@ -1,7 +1,6 @@
 """
 Вспомогательная утилита для поиска термина в MeSH
 """
-import owlready2
 from dotenv import load_dotenv
 
 from src.modules.dictionary.mesh import MeSH
@@ -9,7 +8,7 @@ from src.modules.dictionary.snomed import Snomed
 
 
 class SearchInDict:
-    def _print_concept(self, concept: owlready2.pymedtermino2.model.MetaConcept, dict_name: str) -> None:
+    def _print_concept(self, concept, dict_name: str) -> None:
         print(f"{dict_name}\t{str(concept.label[0])} [{concept.name}]")
 
     def run(self):

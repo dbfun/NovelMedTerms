@@ -31,7 +31,7 @@ class Umls(ABC):
         """
         Загрузка словаря в библиотеку owlready2. Выполняется только 1 раз.
         """
-        if cls._onto is not None:
+        if Umls._onto is not None:
             return
 
         filename = Path("resources/dictionaries/umls/pym.sqlite3")
@@ -39,7 +39,7 @@ class Umls(ABC):
             raise FileNotFoundError(f"Файл {filename} должен быть создан скриптом init.py. См. README.md")
 
         default_world.set_backend(filename=filename)
-        cls._onto = get_ontology("http://PYM/").load()
+        Umls._onto = get_ontology("http://PYM/").load()
 
     @abstractmethod
     def name(self) -> str:
