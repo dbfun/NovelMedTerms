@@ -1,7 +1,6 @@
 from sqlalchemy.orm.session import Session
 
-from factories import ArticleFactory, ModuleFactory, TermFactory
-from factories.article_term_annotation_factory import ArticleTermAnnotationFactory
+from factories import ArticleFactory, ModuleFactory, TermFactory, DictionaryFactory, ArticleTermAnnotationFactory, TermDictionaryRefFactory
 from src.orm.models import Article
 
 
@@ -48,3 +47,17 @@ class TestTermFactory:
         term = TermFactory.create()
         assert term.term_text.startswith("term_")
         assert term.word_count == 1
+
+
+class TestDictionaryFactory:
+    """Тестирование DictionaryFactory"""
+
+    def test_create(self, db_session):
+        dictionary = DictionaryFactory.create()
+        assert dictionary.name.startswith("dict_")
+
+class TestTermDictionaryRefFactory:
+    """Тестирование TermDictionaryRefFactory"""
+    def test_create(self, db_session):
+        ref = TermDictionaryRefFactory.create()
+        assert ref.ref_id.startswith("code_")
