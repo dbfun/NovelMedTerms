@@ -8,7 +8,7 @@ from src.orm.database import BaseModel
 
 # Обход проблемы циклического импорта:
 if TYPE_CHECKING:
-    from src.orm.models import ArticleTermAnnotation, Dictionary
+    from src.orm.models import TermDictionaryRef, ArticleTermAnnotation, Dictionary
 
 
 class Term(BaseModel):
@@ -21,8 +21,19 @@ class Term(BaseModel):
     # Связи с другими таблицами БД
     annotations: Mapped[list["ArticleTermAnnotation"]] = relationship("ArticleTermAnnotation", back_populates="term",
                                                                       cascade="all, delete-orphan")
-    dictionaries: Mapped[list["Dictionary"]] = relationship("Dictionary", secondary="term_dictionary_ref",
-                                                            back_populates="terms")
+    # Связь с ассоциативной таблицей
+    term_dictionary_refs: Mapped[list["TermDictionaryRef"]] = relationship(
+        "TermDictionaryRef",
+        back_populates="term",
+        cascade="all, delete-orphan"
+    )
+    # Простая many-to-many связь
+    dictionaries: Mapped[list["Dictionary"]] = relationship(
+        "Dictionary",
+        secondary="term_dictionary_ref",
+        back_populates="terms",
+        overlaps="term_dictionary_refs"
+    )
 
     __table_args__ = (
         Index("idx_term_text", "term_text"),

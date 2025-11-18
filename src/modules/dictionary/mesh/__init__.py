@@ -16,7 +16,7 @@ class MeSH(Umls):
     """
 
     def name(self) -> str:
-        return 'MeSH (Medical Subject Headings) thesaurus'
+        return 'MeSH'
 
     def dict(self):
         return self._onto["MSH"]
@@ -50,7 +50,7 @@ class DictionaryMesh(Module):
 
     @staticmethod
     def info() -> ModuleInfo:
-        return ModuleInfo(module="dictionary", type="mesh")
+        return ModuleInfo(module="dictionary", type="MeSH")
 
     def handle(self) -> None:
         """Запуск поиска"""

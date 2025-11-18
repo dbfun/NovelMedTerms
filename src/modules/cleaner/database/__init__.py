@@ -10,7 +10,7 @@ class CleanerDatabase(Module):
     Модуль очистки базы данных.
     """
 
-    def __init__(self, models: list):
+    def __init__(self, models: list[str]):
         """
         Args:
             models: список моделей для очистки

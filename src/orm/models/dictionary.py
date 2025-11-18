@@ -7,7 +7,7 @@ from src.orm.database import BaseModel
 
 # Обход проблемы циклического импорта:
 if TYPE_CHECKING:
-    from src.orm.models import Term
+    from src.orm.models import Term, TermDictionaryRef
 
 
 class Dictionary(BaseModel):
@@ -17,7 +17,19 @@ class Dictionary(BaseModel):
     name: Mapped[str] = mapped_column(Text, nullable=False, comment="Название словаря", unique=True)
 
     # Связи с другими таблицами БД
-    terms: Mapped[list["Term"]] = relationship("Term", secondary="term_dictionary_ref", back_populates="dictionaries")
+    # Связь с ассоциативной таблицей
+    term_dictionary_refs: Mapped[list["TermDictionaryRef"]] = relationship(
+        "TermDictionaryRef",
+        back_populates="dictionary",
+        cascade="all, delete-orphan"
+    )
+    # Простая many-to-many связь
+    terms: Mapped[list["Term"]] = relationship(
+        "Term",
+        secondary="term_dictionary_ref",
+        back_populates="dictionaries",
+        overlaps="term_dictionary_refs"
+    )
 
     __table_args__ = (
         {"comment": "Словари терминов"}
