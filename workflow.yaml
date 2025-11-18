@@ -52,14 +52,22 @@ stages:
     # Возможна работа нескольких словарей
     modules:
       - module: dictionary
-        # Варианты: mesh, umls, snomed.
-        type: mesh
-#
-#
-#  - name: Этап вывода результатов
-#    modules:
-#      - module: output
-#        type: excel
-#        file: results.xlsx
+        # Варианты: MeSH, SNOMED CT.
+        type: MeSH
+
+  - name: Этап вывода результатов
+    modules:
+      # Запись в Excel всех извлеченных терминов по годам с указанием вхождения в словари
+      - module: output
+        type: excel
+        params:
+          # Варианты: MeSH, SNOMED CT.
+          dictionaries:
+            - MeSH
+#      # Построение диаграмм по извлеченным терминам
 #      - module: output
 #        type: charts
+#        params:
+#          # Варианты: MeSH, SNOMED CT.
+#          dictionaries:
+#            - MeSH

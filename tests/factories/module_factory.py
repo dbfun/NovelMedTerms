@@ -17,4 +17,4 @@ class ModuleFactory(SQLAlchemyModelFactory):
         sqlalchemy_session_factory = lambda: container.db_session()
         sqlalchemy_session_persistence = "flush"
 
-    name = factory.Sequence(lambda n: f"module_{n}")
+    name = factory.Sequence(lambda n: f"module_{n + 1}")

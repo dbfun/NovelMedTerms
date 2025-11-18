@@ -17,4 +17,4 @@ class DictionaryFactory(SQLAlchemyModelFactory):
         sqlalchemy_session_factory = lambda: container.db_session()
         sqlalchemy_session_persistence = "flush"
 
-    name = factory.Sequence(lambda n: f"dict_{n}")
+    name = factory.Sequence(lambda n: f"dict_{n + 1}")

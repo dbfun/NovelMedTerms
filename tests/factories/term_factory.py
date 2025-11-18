@@ -17,5 +17,5 @@ class TermFactory(SQLAlchemyModelFactory):
         sqlalchemy_session_factory = lambda: container.db_session()
         sqlalchemy_session_persistence = "flush"
 
-    term_text = factory.Sequence(lambda n: f"term_{n}")
+    term_text = factory.Sequence(lambda n: f"term_{n + 1}")
     word_count = 1

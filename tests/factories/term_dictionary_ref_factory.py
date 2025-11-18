@@ -18,6 +18,6 @@ class TermDictionaryRefFactory(SQLAlchemyModelFactory):
         sqlalchemy_session_factory = lambda: container.db_session()
         sqlalchemy_session_persistence = "flush"
 
-    ref_id = factory.Sequence(lambda n: f"code_{n}")
+    ref_id = factory.Sequence(lambda n: f"code_{n + 1}")
     term = factory.SubFactory(TermFactory)
     dictionary = factory.SubFactory(DictionaryFactory)
