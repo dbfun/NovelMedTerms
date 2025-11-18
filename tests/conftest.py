@@ -10,6 +10,7 @@ from src.container import container
 from src.orm import models
 from src.orm.database import BaseModel
 from src.orm.models import Article
+from src.workflow import Experiment
 
 _ = models  # Защита от удаления линтером.
 
@@ -105,4 +106,14 @@ def valid_article() -> Article:
         title="Test Title",
         abstract="Test Abstract",
         pubdate=datetime.date.today()
+    )
+
+
+@pytest.fixture(scope="function", autouse=True)
+def fake_experiment(tmp_path):
+    """Фикстура для Experiment"""
+    return Experiment(
+        name="Pytest fake experiment",
+        description="Fake description",
+        directory=str(tmp_path),
     )

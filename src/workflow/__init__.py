@@ -5,7 +5,9 @@ from pydantic import BaseModel, Field
 
 
 class Experiment(BaseModel):
+    name: str = Field(..., description="Название эксперимента")
     description: str = Field(..., description="Описание эксперимента")
+    directory: str = Field(..., description="Путь к каталогу для сохранения результатов")
 
 
 class Module(BaseModel, extra="allow"):

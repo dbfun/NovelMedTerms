@@ -42,7 +42,7 @@ class Workflow:
 
     def run(self):
         """Запуск последовательности стадий"""
-        logger.info(self.cfg.experiment.description)
+        logger.info(self.cfg.experiment.name)
 
         for stage in self.cfg.stages:
             logger.info(stage.name)
@@ -53,6 +53,7 @@ class Workflow:
                     type=module.type,
                     **params
                 )
+                module_obj.experiment = self.cfg.experiment
                 module_obj.handle()
 
 

@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from src.orm.models.module import Module as DbModule
+from src.workflow import Experiment
 
 
 class ModuleInfo(BaseModel):
@@ -29,6 +30,16 @@ class Module(ABC):
     def handle(self) -> None:
         """Запуск модуля"""
         pass
+
+    @property
+    def experiment(self) -> Experiment:
+        return self._experiment
+
+    @experiment.setter
+    def experiment(self, val: Experiment) -> None:
+        if not val or not isinstance(val, Experiment):
+            raise ValueError("Недопустимое значение")
+        self._experiment = val
 
     def _register_module_in_db(self, session: Session) -> int:
         """
