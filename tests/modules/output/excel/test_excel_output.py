@@ -17,6 +17,7 @@ class TestExcelOutput:
         """Фикстура подсчета статистики"""
         return {
             "Term": "term_in_both",
+            "Word count": 1,
             "Year": Decimal("2000"),
             "Count": 1,
             "MeSH": "mesh_code_1",
@@ -129,13 +130,14 @@ class TestExcelOutput:
 
         # Сравниваем с ожидаемыми данными
         expected = [
-            {"Term": "term_in_both", "Year": Decimal("2000"), "Count": 1, "MeSH": "mesh_code_1",
+            {"Term": "term_in_both", "Word count": 1, "Year": Decimal("2000"), "Count": 1, "MeSH": "mesh_code_1",
              "SNOMED CT": "snomed_code_1"},
-            {"Term": "term_in_both", "Year": Decimal("2001"), "Count": 1, "MeSH": "mesh_code_1",
+            {"Term": "term_in_both", "Word count": 1, "Year": Decimal("2001"), "Count": 1, "MeSH": "mesh_code_1",
              "SNOMED CT": "snomed_code_1"},
-            {"Term": "term_in_mesh", "Year": Decimal("2000"), "Count": 1, "MeSH": "mesh_code_2",
+            {"Term": "term_in_mesh", "Word count": 1, "Year": Decimal("2000"), "Count": 1, "MeSH": "mesh_code_2",
              "SNOMED CT": ""},
-            {"Term": "term_not_in_dict", "Year": Decimal("2001"), "Count": 1, "MeSH": "", "SNOMED CT": ""}
+            {"Term": "term_not_in_dict", "Word count": 1, "Year": Decimal("2001"), "Count": 1, "MeSH": "",
+             "SNOMED CT": ""}
         ]
 
         assert statistics == expected
@@ -154,11 +156,13 @@ class TestExcelOutput:
 
         # Проверка структуры файла
         df = pd.read_excel(excel_file)
-        assert ["Term", "Year", "Count", "MeSH", "SNOMED CT"] == df.columns.values.tolist(), "Структура не совпадает"
+        assert ["Term", "Word count", "Year", "Count", "MeSH",
+                "SNOMED CT"] == df.columns.values.tolist(), "Структура не совпадает"
 
         # Проверка данных
         expected = [
             term_statistics_result["Term"],
+            term_statistics_result["Word count"],
             term_statistics_result["Year"],
             term_statistics_result["Count"],
             term_statistics_result["MeSH"],
