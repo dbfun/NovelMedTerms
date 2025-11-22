@@ -54,6 +54,9 @@ stages:
       - module: dictionary
         # Варианты: MeSH, SNOMED CT.
         type: MeSH
+      - module: dictionary
+        # Варианты: MeSH, SNOMED CT.
+        type: SNOMED CT
 
   - name: Этап вывода результатов
     modules:
@@ -64,6 +67,7 @@ stages:
           # Варианты: MeSH, SNOMED CT.
           dictionaries:
             - MeSH
+            - SNOMED CT
 #      # Построение диаграмм по извлеченным терминам
 #      - module: output
 #        type: charts

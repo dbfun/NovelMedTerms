@@ -16,6 +16,7 @@ module = container.module(
 from src.modules.module_registry import register_module
 from .cleaner.database import CleanerDatabase
 from .dictionary.mesh import DictionaryMesh
+from .dictionary.snomed import DictionarySnomed
 from .fetcher.pubmed import PubMedCentralFetcher
 from .ner.pos_based_hybrid import PosBasedHybrid
 from .output.excel import ExcelOutput
@@ -26,4 +27,5 @@ register_module(PubMedCentralFetcher)
 register_module(PosBasedHybrid)
 register_module(PytestModule)
 register_module(DictionaryMesh)
+register_module(DictionarySnomed)
 register_module(ExcelOutput)
