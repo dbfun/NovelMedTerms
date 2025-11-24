@@ -3,6 +3,7 @@ experiment:
   name: Тестовый запуск
   description: Тестовый запуск для проверки возможностей системы
   directory: "workflows/Тестовый запуск"
+  author: Вагун И.В.
 
 # Этапы рабочего процесса в порядке их запуска из workflow.py.
 stages:
