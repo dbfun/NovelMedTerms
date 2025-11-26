@@ -26,7 +26,9 @@ class TestExcelOutput:
 
     def test_handle(self, db_session, term_statistics_result):
         """Проверка, что запуск модуля приводит к выполнению цепочки связанных операций"""
-        module = ExcelOutput(["MeSH"])
+
+        dictionaries = ["MeSH", "SNOMED CT"]
+        module = ExcelOutput(dictionaries)
 
         with patch.object(module, "_load_dictionaries") as mock_load_dicts, \
                 patch.object(module, "_load_statistics") as mock_load_stats, \
@@ -42,7 +44,7 @@ class TestExcelOutput:
             module.handle()
 
             # Проверяем последовательность вызовов
-            mock_load_dicts.assert_called_once_with(db_session)
+            mock_load_dicts.assert_called_once_with(db_session, dictionaries)
             mock_load_stats.assert_called_once_with(db_session, [mesh, snomed])
             mock_generate.assert_called_once_with([term_statistics_result])
 
@@ -62,8 +64,8 @@ class TestExcelOutput:
         first_dictionary = db_session.query(Dictionary).first()
 
         # Запускаем _load_dictionaries()
-        module = ExcelOutput([first_dictionary.name])
-        dictionaries = module._load_dictionaries(db_session)
+        module = ExcelOutput([])
+        dictionaries = module._load_dictionaries(db_session, [first_dictionary.name])
 
         assert dictionaries == [first_dictionary], "Выбран не верный словарь"
 
@@ -71,8 +73,8 @@ class TestExcelOutput:
         """Проверка, что если передать неверное название словаря, произойдет ошибка"""
 
         with pytest.raises(RuntimeError) as exc_info:
-            module = ExcelOutput(["missing_dictionary"])
-            module._load_dictionaries(db_session)
+            module = ExcelOutput([])
+            module._load_dictionaries(db_session, ["missing_dictionary"])
 
         assert "Передан неверный список словарей" in str(exc_info.value)
 
@@ -151,7 +153,7 @@ class TestExcelOutput:
         module._generate_excel([term_statistics_result])
 
         # Проверка наличия файла
-        excel_file = module.output_file_path()
+        excel_file = module._generate_output_file_path("statistics.xlsx")
         assert excel_file.exists(), "Excel файл не найден"
 
         # Проверка структуры файла

@@ -8,7 +8,6 @@ experiment:
 # Этапы рабочего процесса в порядке их запуска из workflow.py.
 stages:
 
-
   # Можно пропустить, если статьи уже были загружены ранее с теми же параметрами.
   - name: Этап импорта статей
     modules:
@@ -69,10 +68,11 @@ stages:
           dictionaries:
             - MeSH
             - SNOMED CT
-#      # Построение диаграмм по извлеченным терминам
-#      - module: output
-#        type: charts
-#        params:
-#          # Варианты: MeSH, SNOMED CT.
-#          dictionaries:
-#            - MeSH
+      # Построение диаграмм по извлеченным терминам
+      - module: output
+        type: charts
+        params:
+          # Варианты: MeSH, SNOMED CT.
+          dictionaries:
+            - MeSH
+            - SNOMED CT

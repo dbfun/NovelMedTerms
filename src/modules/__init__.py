@@ -20,6 +20,7 @@ from .dictionary.snomed import DictionarySnomed
 from .fetcher.pubmed import PubMedCentralFetcher
 from .ner.pos_based_hybrid import PosBasedHybrid
 from .output.excel import ExcelOutput
+from .output.charts import ChartsOutput
 from .pytest.pytest_module import PytestModule
 
 register_module(CleanerDatabase)
@@ -29,3 +30,4 @@ register_module(PytestModule)
 register_module(DictionaryMesh)
 register_module(DictionarySnomed)
 register_module(ExcelOutput)
+register_module(ChartsOutput)

@@ -1,15 +1,15 @@
 import logging
-from pathlib import Path
 
 import pandas as pd
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from src.modules.module import Module, ModuleInfo
+from src.modules.module import ModuleInfo
+from src.modules.output.output import Output
 from src.orm.models import Dictionary
 
 
-class ExcelOutput(Module):
+class ExcelOutput(Output):
     """
     Модуль для сохранения результатов в Excel.
     """
@@ -31,35 +31,11 @@ class ExcelOutput(Module):
         from src.container import container
 
         with container.db_session() as session:
-            dictionaries = self._load_dictionaries(session)
+            dictionaries = self._load_dictionaries(session, self.dictionaries)
 
             results = self._load_statistics(session, dictionaries)
 
             self._generate_excel(results)
-
-    def output_file_path(self):
-        """Путь к файлу с результатами работы."""
-        return Path(self.experiment.directory + "/statistics.xlsx")
-
-    def _load_dictionaries(self, session: Session) -> list[Dictionary]:
-        """
-        Получение списка словарей из БД для дальнейшей подстановки в SQL.
-
-        Args:
-            session: сессия SQLAlchemy
-
-        Returns:
-            Список словарей из БД
-        """
-        dictionaries = session.query(Dictionary).filter(Dictionary.name.in_(self.dictionaries)).all()
-
-        loaded_dictionaries = [obj.name for obj in dictionaries]
-
-        if self.dictionaries != loaded_dictionaries:
-            raise RuntimeError(
-                f"Передан неверный список словарей: {self.dictionaries}, загружены: {loaded_dictionaries}")
-
-        return dictionaries
 
     def _load_statistics(self, session: Session, dictionaries: list[Dictionary]):
         """
@@ -163,11 +139,9 @@ class ExcelOutput(Module):
         # Превращаем результаты в DataFrame
         df = pd.DataFrame(results)
 
-        # Создаем каталог, если его нет
-        directory = Path(self.experiment.directory)
-        directory.mkdir(parents=True, exist_ok=True)
-
         # Сохраняем
-        df.to_excel(self.output_file_path(), index=False)
+        self._create_experiment_dir()
+        excel_file = self._generate_output_file_path("statistics.xlsx")
+        df.to_excel(excel_file, index=False)
 
-        self.logger.info(f"Результаты сохранены в файл {self.output_file_path()}")
+        self.logger.info(f"Результаты сохранены в файл {excel_file}")
