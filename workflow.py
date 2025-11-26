@@ -35,9 +35,9 @@ class Workflow:
         """Чтение управляющей последовательности из файла workflow.yml"""
         parser = argparse.ArgumentParser()
         parser.add_argument("file", type=Path, help="Путь к файлу")
-        self.args = parser.parse_args()
+        args = parser.parse_args()
 
-        with open(self.args.file, "r", encoding="utf-8") as f:
+        with open(args.file, "r", encoding="utf-8") as f:
             self.cfg = Config(**yaml.safe_load(f))
 
     def run(self):
