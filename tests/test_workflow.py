@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import yaml
 
-from factories.workflow import ConfigFactory
+from factories.workflow_factories import ConfigFactory
 from workflow import Workflow
 
 

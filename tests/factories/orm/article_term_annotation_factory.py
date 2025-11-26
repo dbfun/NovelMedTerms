@@ -1,7 +1,7 @@
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
 
-from factories import TermFactory, ArticleFactory, ModuleFactory
+from factories.orm import TermFactory, ArticleFactory, ModuleFactory
 from src.container import container
 from src.orm.models import ArticleTermAnnotation
 

@@ -1,7 +1,7 @@
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
 
-from factories import TermFactory, DictionaryFactory
+from factories.orm import TermFactory, DictionaryFactory
 from src.container import container
 from src.orm.models import TermDictionaryRef
 

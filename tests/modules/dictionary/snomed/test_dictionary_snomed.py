@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from factories.article_term_annotation_factory import ArticleTermAnnotationFactory
+from factories.orm import ArticleTermAnnotationFactory
 from src.modules.dictionary import TermDTO
 from src.modules.dictionary.snomed import DictionarySnomed, Snomed
 from src.orm.models import Term, TermDictionaryRef

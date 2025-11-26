@@ -1,6 +1,6 @@
 from sqlalchemy.orm.session import Session
 
-from factories import ArticleFactory, ModuleFactory, TermFactory, DictionaryFactory, ArticleTermAnnotationFactory, \
+from factories.orm import ArticleFactory, ModuleFactory, TermFactory, DictionaryFactory, ArticleTermAnnotationFactory, \
     TermDictionaryRefFactory
 from src.orm.models import Article
 

@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pandas as pd
 import pytest
 
-from factories import TermDictionaryRefFactory, DictionaryFactory, TermFactory, ArticleFactory, \
+from factories.orm import TermDictionaryRefFactory, DictionaryFactory, TermFactory, ArticleFactory, \
     ArticleTermAnnotationFactory
 from src.modules.output.excel import ExcelOutput
 from src.orm.models import Dictionary
