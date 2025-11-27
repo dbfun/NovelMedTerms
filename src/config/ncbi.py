@@ -2,6 +2,9 @@ import os
 
 
 class NcbiConfig:
+    """
+    Конфигурация NCBI.
+    """
 
     @staticmethod
     def email() -> str:

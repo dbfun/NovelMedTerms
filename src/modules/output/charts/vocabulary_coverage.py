@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from src.helper import disable_logging, enable_logging
 from src.orm.models import Dictionary
 
 
@@ -16,7 +17,13 @@ class VocabularyCoverage():
         self.session = session
         self.dictionaries = dictionaries
 
-    def handle(self, output_file_path: Path):
+    def handle(self, output_file_path: Path) -> None:
+        """
+        Запуск генерации
+
+        Args:
+            output_file_path: путь к файлу для сохранения результатов
+        """
         results = self._fetch_results()
         self._generate_chart(results, output_file_path)
 
@@ -51,9 +58,7 @@ class VocabularyCoverage():
                 f"""
                 LEFT JOIN term_dictionary_ref {table_alias}
                        ON {table_alias}.term_id = t.id
-                      AND {table_alias}.dictionary_id = :{param_name}
-                """
-            )
+                      AND {table_alias}.dictionary_id = :{param_name}""")
 
         joins_sql = "\n".join(join_tables)
         fields_sql = ",\n        ".join(select_fields)
@@ -65,9 +70,9 @@ class VocabularyCoverage():
             COUNT(*)                     AS total_count,
             {fields_sql}
         FROM terms t
-        JOIN article_term_annotations ann ON t.id = ann.term_id
-        JOIN articles a ON a.id = ann.article_id
-        {joins_sql}
+            JOIN article_term_annotations ann ON t.id = ann.term_id
+            JOIN articles a ON a.id = ann.article_id
+            {joins_sql}
         GROUP BY year
         ORDER BY year;
         """
@@ -96,6 +101,8 @@ class VocabularyCoverage():
         return ret
 
     def _generate_chart(self, results: list[dict], output_file_path: Path) -> None:
+        disable_logging()
+
         years = [d["year"] for d in results]
         total = [d["total_count"] for d in results]
 
@@ -108,12 +115,12 @@ class VocabularyCoverage():
         ax1.plot(years, total, label="Общее количество извлеченных терминов", color="gray", linestyle="-", linewidth=2)
         ax1.set_xlabel("Год")
         ax1.set_ylabel("Количество терминов")
-        ax1.tick_params(axis='y')
+        ax1.tick_params(axis="y")
 
         # Правая ось: доля терминов в словарях
         ax2 = ax1.twinx()
         ax2.set_ylabel("Процент покрытия", color="black")
-        ax2.tick_params(axis='y', labelcolor="black")
+        ax2.tick_params(axis="y", labelcolor="black")
 
         # Трансформируем результаты в набор значений по словарям
         cnt_by_dict = {}
@@ -148,3 +155,5 @@ class VocabularyCoverage():
         plt.tight_layout()
         plt.savefig(output_file_path, dpi=300, bbox_inches="tight")
         plt.close()
+
+        enable_logging()

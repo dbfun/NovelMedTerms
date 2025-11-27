@@ -2,6 +2,9 @@ import os
 
 
 class DatabaseConfig:
+    """
+    Конфигурация БД.
+    """
 
     def db_url(self) -> str:
         """Строка подключения к БД"""

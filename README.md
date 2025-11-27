@@ -9,6 +9,10 @@
 
 ![vocabulary_coverage.png](assets/charts/vocabulary_coverage.png)
 
+Пример облака слов, созданного модулем `output.charts`:
+
+![wordcloud.png](assets/charts/wordcloud.png)
+
 Пример Excel, построенного модулем `output.excel`:
 
 ![statistics.xlsx.png](assets/excel/statistics.xlsx.png)
