@@ -5,9 +5,13 @@
 Он имеет модульную архитектуру, поддерживает гибкую настройку рабочих процессов через YAML-файлы, интеграцию с внешними
 словарями и автоматический вывод результатов в нескольких форматах.
 
-Пример графика, построенного модулем "output.charts":
+Пример графика, построенного модулем `output.charts`:
 
 ![vocabulary_coverage.png](assets/charts/vocabulary_coverage.png)
+
+Пример Excel, построенного модулем `output.excel`:
+
+![statistics.xlsx.png](assets/excel/statistics.xlsx.png)
 
 ## Системные требования
 
@@ -234,3 +238,8 @@ LOG_LEVEL=debug python workflow.py workflows/manual-test.yaml
 * [ ] таблица `dictionaries` содержит названия словарей, использованных при поиске терминов;
 * [ ] результаты сохранены в каталог, указанный в конфигурации.
 
+## Структура проекта
+
+Схема базы данных:
+
+![db_schema.png](assets/db_schema.png)
