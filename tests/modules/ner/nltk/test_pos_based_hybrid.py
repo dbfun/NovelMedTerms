@@ -256,9 +256,7 @@ class TestExtractTermsFromText:
 
         actual = module._extract_terms_from_text(text)
 
-        print(actual)
-
-        # assert expected == actual
+        assert expected == actual
 
 
 class TestHandle:
