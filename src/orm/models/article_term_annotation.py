@@ -50,5 +50,6 @@ class ArticleTermAnnotation(BaseModel):
         module_id = self.module_id
         start_char = self.start_char
         end_char = self.end_char
+        surface_form = self.surface_form
 
-        return f"{id=}\n{term_id=}\n{article_id=}\n{module_id=}\n{start_char=}\n{end_char=}"
+        return f"{id=}\n{term_id=}\n{article_id=}\n{module_id=}\n{start_char=}\n{end_char=}\n{surface_form=}"

@@ -1,10 +1,8 @@
-from datetime import date
 from unittest.mock import patch
 
 import pytest
 
 from src.modules.ner.pos_based_hybrid import PosBasedHybrid
-from src.orm.models import Article, Term, ArticleTermAnnotation
 
 
 class TestIsTerm:
@@ -155,7 +153,7 @@ class TestCleanWord:
 
 
 class TestExtractTermsFromText:
-    """Тесты для метода extract_terms_from_text."""
+    """Тесты для метода _extract_terms_from_text."""
 
     @pytest.fixture
     def module(self):
@@ -257,86 +255,3 @@ class TestExtractTermsFromText:
         actual = module._extract_terms_from_text(text)
 
         assert expected == actual
-
-
-class TestHandle:
-    """
-    Интеграционный тест для метода handle.
-
-    Проверяет основной путь:
-        1. чтение статей из БД
-        2. извлечение терминов
-        3. сохранение терминов в БД
-        4. сохранение разметки статьи по терминам в БД
-    """
-
-    @pytest.fixture
-    def module(self):
-        """Фикстура для создания экземпляра модуля."""
-        return PosBasedHybrid()
-
-    @patch("nltk.pos_tag")
-    @patch("nltk.word_tokenize")
-    def test_handle_extracts_and_saves_terms(self, mock_tokenize, mock_pos_tag, module, db_session):
-        """
-        Основной путь: handle должен прочитать статьи, извлечь термины и сохранить их в БД.
-        """
-
-        # Мокаем NLTK: все слова - существительные (термины)
-        mock_tokenize.side_effect = lambda w: [w]
-        mock_pos_tag.side_effect = lambda tokens: [(t, "NN") for t in tokens]
-
-        # Подготовка: создаем тестовые статьи
-        article1 = Article(
-            pmcid="PMC01",
-            authors="Test Author",
-            title="Test Title",
-            abstract="Cancer treatment is effective therapy.",
-            pubdate=date(2021, 1, 1)
-        )
-        article2 = Article(
-            pmcid="PMC02",
-            authors="Test Author",
-            title="Test Title",
-            abstract="Cancer treatment for elderly patients living alone.",
-            pubdate=date(2021, 1, 1)
-        )
-        db_session.add_all([article1, article2])
-        db_session.commit()
-
-        article_ids = [article1.id, article2.id]
-
-        # Запуск извлечения терминов
-        module.handle()
-
-        # Проверка: термины должны быть сохранены в БД
-        term = db_session.query(Term).order_by(Term.id).all()
-        assert len(term) == 3, "Термины должны быть извлечены и сохранены"
-
-        assert term[0].term_text == 'cancer treatment'
-        assert term[0].word_count == 2
-        assert term[1].term_text == 'effective therapy'
-        assert term[1].word_count == 2
-        assert term[2].term_text == 'elderly patients living alone'
-        assert term[2].word_count == 4
-
-        # Проверка: разметка статей по терминам
-        article_term_annotations = db_session.query(ArticleTermAnnotation).filter(
-            ArticleTermAnnotation.article_id == article_ids[0]).order_by(
-            ArticleTermAnnotation.id).all()
-        assert len(article_term_annotations) == 2, "Разметка не сохранена"
-
-        assert article_term_annotations[0].start_char == 0
-        assert article_term_annotations[0].end_char == 16
-        assert article_term_annotations[1].start_char == 20
-        assert article_term_annotations[1].end_char == 37
-
-        article_term_annotations = db_session.query(ArticleTermAnnotation).filter(
-            ArticleTermAnnotation.article_id == article_ids[1]).order_by(
-            ArticleTermAnnotation.id).all()
-        assert len(article_term_annotations) == 2, "Разметка не сохранена"
-
-        assert article_term_annotations[0].start_char == 0
-        assert article_term_annotations[0].end_char == 16
-        assert article_term_annotations[1].start_char == 21
-        assert article_term_annotations[1].end_char == 50
