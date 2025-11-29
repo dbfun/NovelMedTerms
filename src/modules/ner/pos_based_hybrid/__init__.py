@@ -74,7 +74,8 @@ class PosBasedHybrid(Module):
                         article_id=article.id,
                         module_id=module_id,
                         start_char=term_data["start_pos"],
-                        end_char=term_data["end_pos"]
+                        end_char=term_data["end_pos"],
+                        surface_form=term_data["surface_form"],
                     )
                     session.add(article_term_annotation)
                     term_count += 1
@@ -171,8 +172,13 @@ class PosBasedHybrid(Module):
 
     def _add_term_if_valid(self, ret: list, start_pos: int, term: str, word_count: int):
         if len(term) > self.MIN_TERM_LENGTH:
-            ret.append({"text": term.strip().lower(), "word_count": word_count, "start_pos": start_pos,
-                        "end_pos": start_pos + len(term.strip())})
+            ret.append({
+                "text": term.strip().lower(),
+                "word_count": word_count,
+                "start_pos": start_pos,
+                "end_pos": start_pos + len(term.strip()),
+                "surface_form": term.strip(),
+            })
 
     @staticmethod
     def _clean_word(word: str) -> tuple[str, bool]:

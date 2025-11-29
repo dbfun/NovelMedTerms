@@ -23,3 +23,4 @@ class ArticleTermAnnotationFactory(SQLAlchemyModelFactory):
     module = factory.SubFactory(ModuleFactory)
     start_char = 0
     end_char = 5
+    surface_form = factory.Sequence(lambda n: f"form_{n + 1}")

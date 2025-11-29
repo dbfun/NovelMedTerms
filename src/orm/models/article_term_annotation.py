@@ -23,6 +23,7 @@ class ArticleTermAnnotation(BaseModel):
                                            comment="Модуль, который извлек термин")
     start_char: Mapped[int] = mapped_column(nullable=False, comment="Позиция в abstract: начало")
     end_char: Mapped[int] = mapped_column(nullable=False, comment="Позиция в abstract: конец")
+    surface_form: Mapped[str] = mapped_column(nullable=False, comment="Исходная форма слова из текста")
 
     # Связи с другими таблицами БД
     term: Mapped["Term"] = relationship("Term", back_populates="annotations")
