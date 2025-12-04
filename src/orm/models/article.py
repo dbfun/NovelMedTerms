@@ -1,4 +1,5 @@
 import datetime
+from datetime import date, timedelta
 from typing import TYPE_CHECKING
 
 from sqlalchemy import Text, Index
@@ -36,15 +37,22 @@ class Article(BaseModel):
     @validates("pmcid")
     def validate_pmcid(self, key, value) -> None:
         if not value or len(value.strip()) == 0:
-            raise ValueError("PMC cannot be empty")
+            raise ValueError("Поле pmcid не может быть пустым")
         if len(value) > 50:
-            raise ValueError("PMC too long")
+            raise ValueError("Поле pmcid слишком длинное")
         return value.strip()
 
     @validates("abstract")
     def validate_abstract(self, key, value) -> None:
         if not value or len(value.strip()) == 0:
-            raise ValueError("Abstract cannot be empty")
+            raise ValueError("Поле abstract не может быть пустым")
+        return value
+
+    @validates("pubdate")
+    def validate_pubdate(self, key, value) -> None:
+        tomorrow = date.today() + timedelta(days=1)
+        if value >= tomorrow:
+            raise ValueError("Поле pubdate не может быть в будущем")
         return value
 
     def __str__(self):

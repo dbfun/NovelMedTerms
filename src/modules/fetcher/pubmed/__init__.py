@@ -65,6 +65,8 @@ class PubMedCentralFetcher(Module):
                     records = Medline.parse(fetch_handle)
                     for rec in records:
                         try:
+                            # В ORM есть дополнительные валидации, поэтому пишем не напрямую в БД,
+                            # а предварительно создаем модель
                             article = Article(
                                 pmcid=rec.get("PMC"),
                                 title=rec.get("TI"),
