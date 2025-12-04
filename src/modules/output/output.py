@@ -7,7 +7,7 @@ from src.orm.models import Dictionary
 
 
 class Output(Module):
-    def _load_dictionaries(self, session: Session, dict_names: list[str]) -> list[Dictionary]:
+    def _load_dictionaries(self, session: Session, dict_names: set[str]) -> list[Dictionary]:
         """
         Получение списка словарей из БД для дальнейшей подстановки в SQL.
 
@@ -18,9 +18,9 @@ class Output(Module):
         Returns:
             Список словарей из БД
         """
-        dictionaries = session.query(Dictionary).filter(Dictionary.name.in_(dict_names)).all()
+        dictionaries: list[Dictionary] = session.query(Dictionary).filter(Dictionary.name.in_(dict_names)).all()
 
-        loaded_dictionaries = [obj.name for obj in dictionaries]
+        loaded_dictionaries = set([obj.name for obj in dictionaries])
 
         if dict_names != loaded_dictionaries:
             raise RuntimeError(

@@ -44,7 +44,7 @@ class TestExcelOutput:
             module.handle()
 
             # Проверяем последовательность вызовов
-            mock_load_dicts.assert_called_once_with(db_session, dictionaries)
+            mock_load_dicts.assert_called_once_with(db_session, set(dictionaries))
             mock_load_stats.assert_called_once_with(db_session, [mesh, snomed])
             mock_generate.assert_called_once_with([term_statistics_result])
 
@@ -65,7 +65,7 @@ class TestExcelOutput:
 
         # Запускаем _load_dictionaries()
         module = ExcelOutput([])
-        dictionaries = module._load_dictionaries(db_session, [first_dictionary.name])
+        dictionaries = module._load_dictionaries(db_session, {first_dictionary.name})
 
         assert dictionaries == [first_dictionary], "Выбран не верный словарь"
 
@@ -74,7 +74,7 @@ class TestExcelOutput:
 
         with pytest.raises(RuntimeError) as exc_info:
             module = ExcelOutput([])
-            module._load_dictionaries(db_session, ["missing_dictionary"])
+            module._load_dictionaries(db_session, {"missing_dictionary"})
 
         assert "Передан неверный список словарей" in str(exc_info.value)
 

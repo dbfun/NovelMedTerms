@@ -19,7 +19,7 @@ class ExcelOutput(Output):
         Args:
             dictionaries: список словарей
         """
-        self.dictionaries = dictionaries
+        self.dictionaries = set(dictionaries)
         self.logger = logging.getLogger(ExcelOutput.info().name())
 
     @staticmethod

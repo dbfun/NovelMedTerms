@@ -16,7 +16,7 @@ class ChartsOutput(Output):
         Args:
             dictionaries: список словарей
         """
-        self.dictionaries = dictionaries
+        self.dictionaries = set(dictionaries)
         self.logger = logging.getLogger(ChartsOutput.info().name())
 
     @staticmethod

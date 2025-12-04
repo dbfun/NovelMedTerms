@@ -50,13 +50,26 @@ stages:
 
   - name: Этап поиска в словаре
     # Возможна работа нескольких словарей
+    # Варианты для type: MeSH, SNOMED CT, CUI, DrugBank, GO, HPO, ICD10, NCI, WHO.
     modules:
       - module: dictionary
-        # Варианты: MeSH, SNOMED CT.
         type: MeSH
       - module: dictionary
-        # Варианты: MeSH, SNOMED CT.
         type: SNOMED CT
+      - module: dictionary
+        type: CUI
+      - module: dictionary
+        type: DrugBank
+      - module: dictionary
+        type: GO
+      - module: dictionary
+        type: HPO
+      - module: dictionary
+        type: ICD10
+      - module: dictionary
+        type: NCI
+      - module: dictionary
+        type: WHO
 
   - name: Этап вывода результатов
     modules:
@@ -64,15 +77,29 @@ stages:
       - module: output
         type: excel
         params:
-          # Варианты: MeSH, SNOMED CT.
+          # Варианты для dictionaries: MeSH, SNOMED CT, CUI, DrugBank, GO, HPO, ICD10, NCI, WHO.
           dictionaries:
             - MeSH
             - SNOMED CT
+            - CUI
+            - DrugBank
+            - GO
+            - HPO
+            - ICD10
+            - NCI
+            - WHO
       # Построение диаграмм по извлеченным терминам
       - module: output
         type: charts
         params:
-          # Варианты: MeSH, SNOMED CT.
+          # Варианты для dictionaries: MeSH, SNOMED CT, CUI, DrugBank, GO, HPO, ICD10, NCI, WHO.
           dictionaries:
             - MeSH
             - SNOMED CT
+            - CUI
+            - DrugBank
+            - GO
+            - HPO
+            - ICD10
+            - NCI
+            - WHO

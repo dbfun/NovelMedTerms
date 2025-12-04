@@ -17,6 +17,13 @@ from src.modules.module_registry import register_module
 from .cleaner.database import CleanerDatabase
 from .dictionary.mesh import DictionaryMesh
 from .dictionary.snomed import DictionarySnomed
+from .dictionary.cui import DictionaryCui
+from .dictionary.drugbank import DictionaryDrugBank
+from .dictionary.go import DictionaryGo
+from .dictionary.hpo import DictionaryHpo
+from .dictionary.icd10 import DictionaryIcd10
+from .dictionary.nci import DictionaryNci
+from .dictionary.who import DictionaryWho
 from .fetcher.pubmed import PubMedCentralFetcher
 from .ner.pos_based_hybrid import PosBasedHybrid
 from .output.excel import ExcelOutput
@@ -29,5 +36,12 @@ register_module(PosBasedHybrid)
 register_module(PytestModule)
 register_module(DictionaryMesh)
 register_module(DictionarySnomed)
+register_module(DictionaryCui)
+register_module(DictionaryDrugBank)
+register_module(DictionaryGo)
+register_module(DictionaryHpo)
+register_module(DictionaryIcd10)
+register_module(DictionaryNci)
+register_module(DictionaryWho)
 register_module(ExcelOutput)
 register_module(ChartsOutput)
