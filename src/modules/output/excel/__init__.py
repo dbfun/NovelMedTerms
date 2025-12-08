@@ -92,6 +92,7 @@ class ExcelOutput(Output):
         SELECT
             t.term_text,
             t.word_count,
+            t.pos_model,
             EXTRACT(YEAR FROM a.pubdate) AS year,
             COUNT(*) AS count,
             {fields_sql}
@@ -99,7 +100,7 @@ class ExcelOutput(Output):
         JOIN article_term_annotations ann ON t.id = ann.term_id
         JOIN articles a ON a.id = ann.article_id
         {joins_sql}
-        GROUP BY t.term_text, t.word_count, year, {group_sql}
+        GROUP BY t.term_text, t.word_count, t.pos_model, year, {group_sql}
         ORDER BY t.term_text, year;
         """
 
@@ -114,6 +115,7 @@ class ExcelOutput(Output):
             result = {
                 "Term": row.term_text,
                 "Word count": row.word_count,
+                "Pos model": row.pos_model,
                 "Year": row.year,
                 "Count": row.count,
             }

@@ -24,7 +24,6 @@ class ArticleTermAnnotation(BaseModel):
     start_char: Mapped[int] = mapped_column(nullable=False, comment="Позиция в abstract: начало")
     end_char: Mapped[int] = mapped_column(nullable=False, comment="Позиция в abstract: конец")
     surface_form: Mapped[str] = mapped_column(nullable=False, comment="Исходная форма слова из текста")
-    pos_model: Mapped[str] = mapped_column(nullable=False, comment="Структурная модель термина (POS-теги)")
 
     # Связи с другими таблицами БД
     term: Mapped["Term"] = relationship("Term", back_populates="annotations")
@@ -52,6 +51,5 @@ class ArticleTermAnnotation(BaseModel):
         start_char = self.start_char
         end_char = self.end_char
         surface_form = self.surface_form
-        pos_model = self.pos_model
 
-        return f"{id=}\n{term_id=}\n{article_id=}\n{module_id=}\n{start_char=}\n{end_char=}\n{surface_form=}\n{pos_model=}"
+        return f"{id=}\n{term_id=}\n{article_id=}\n{module_id=}\n{start_char=}\n{end_char=}\n{surface_form=}"

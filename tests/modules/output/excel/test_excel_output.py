@@ -132,14 +132,14 @@ class TestExcelOutput:
 
         # Сравниваем с ожидаемыми данными
         expected = [
-            {"Term": "term_in_both", "Word count": 1, "Year": Decimal("2000"), "Count": 1, "MeSH": "mesh_code_1",
-             "SNOMED CT": "snomed_code_1"},
-            {"Term": "term_in_both", "Word count": 1, "Year": Decimal("2001"), "Count": 1, "MeSH": "mesh_code_1",
-             "SNOMED CT": "snomed_code_1"},
-            {"Term": "term_in_mesh", "Word count": 1, "Year": Decimal("2000"), "Count": 1, "MeSH": "mesh_code_2",
-             "SNOMED CT": ""},
-            {"Term": "term_not_in_dict", "Word count": 1, "Year": Decimal("2001"), "Count": 1, "MeSH": "",
-             "SNOMED CT": ""}
+            {"Term": "term_in_both", "Word count": 1, "Pos model": "NN", "Year": Decimal("2000"), "Count": 1,
+             "MeSH": "mesh_code_1", "SNOMED CT": "snomed_code_1"},
+            {"Term": "term_in_both", "Word count": 1, "Pos model": "NN", "Year": Decimal("2001"), "Count": 1,
+             "MeSH": "mesh_code_1", "SNOMED CT": "snomed_code_1"},
+            {"Term": "term_in_mesh", "Word count": 1, "Pos model": "NN", "Year": Decimal("2000"), "Count": 1,
+             "MeSH": "mesh_code_2", "SNOMED CT": ""},
+            {"Term": "term_not_in_dict", "Word count": 1, "Pos model": "NN", "Year": Decimal("2001"), "Count": 1,
+             "MeSH": "", "SNOMED CT": ""}
         ]
 
         assert statistics == expected

@@ -1,3 +1,5 @@
+import random
+
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
 
@@ -19,3 +21,4 @@ class TermFactory(SQLAlchemyModelFactory):
 
     term_text = factory.Sequence(lambda n: f"term_{n + 1}")
     word_count = 1
+    pos_model = "NN"

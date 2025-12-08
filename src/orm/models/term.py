@@ -17,6 +17,7 @@ class Term(BaseModel):
     id: Mapped[int] = mapped_column(primary_key=True)
     term_text: Mapped[str] = mapped_column(Text, nullable=False, comment="Выделенный термин", unique=True)
     word_count: Mapped[int] = mapped_column(nullable=False, comment="Количество слов в термине")
+    pos_model: Mapped[str] = mapped_column(nullable=False, comment="Структурная модель термина (POS-теги)")
 
     # Связи с другими таблицами БД
     annotations: Mapped[list["ArticleTermAnnotation"]] = relationship("ArticleTermAnnotation", back_populates="term",
@@ -57,5 +58,6 @@ class Term(BaseModel):
         id = self.id
         term_text = self.term_text
         word_count = self.word_count
+        pos_model = self.pos_model
 
-        return f"{id=}\n{term_text=}\n{word_count=}"
+        return f"{id=}\n{term_text=}\n{word_count=}\n{pos_model=}"

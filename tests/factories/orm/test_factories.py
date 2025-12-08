@@ -32,7 +32,6 @@ class TestArticleTermAnnotationFactory:
         annotation = ArticleTermAnnotationFactory.create()
         assert annotation.term.term_text.startswith("term_")
         assert annotation.surface_form.startswith("form_")
-        assert annotation.pos_model in ["NN", "NN + NN"]
 
 
 class TestModuleFactory:
@@ -50,6 +49,7 @@ class TestTermFactory:
         term = TermFactory.create()
         assert term.term_text.startswith("term_")
         assert term.word_count == 1
+        assert term.pos_model == "NN"
 
 
 class TestDictionaryFactory:

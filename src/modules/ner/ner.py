@@ -78,7 +78,6 @@ class Ner(Module):
                         start_char=term_data["start_pos"],
                         end_char=term_data["end_pos"],
                         surface_form=term_data["surface_form"],
-                        pos_model=term_data["pos_model"],
                     )
                     session.add(article_term_annotation)
                     term_count += 1
@@ -113,7 +112,7 @@ class Ner(Module):
         term = session.query(Term).filter_by(term_text=term_data["text"]).first()
 
         if not term:
-            term = Term(term_text=term_data["text"], word_count=term_data["word_count"])
+            term = Term(term_text=term_data["text"], word_count=term_data["word_count"], pos_model=term_data["pos_model"])
             session.add(term)
             session.flush()
 

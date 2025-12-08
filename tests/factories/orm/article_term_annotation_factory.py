@@ -26,4 +26,3 @@ class ArticleTermAnnotationFactory(SQLAlchemyModelFactory):
     start_char = 0
     end_char = 5
     surface_form = factory.Sequence(lambda n: f"form_{n + 1}")
-    pos_model = factory.Sequence(lambda n: random.choice(["NN", "NN + NN"]))

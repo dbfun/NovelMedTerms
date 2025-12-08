@@ -107,10 +107,13 @@ class TestHandle:
 
             assert term[0].term_text == 'cancer treatment'
             assert term[0].word_count == 2
+            assert term[0].pos_model == "NN + NN"
             assert term[1].term_text == 'effective therapy'
             assert term[1].word_count == 2
+            assert term[1].pos_model == "NN + NN"
             assert term[2].term_text == 'elderly patients living alone'
             assert term[2].word_count == 4
+            assert term[2].pos_model == "NN + NN + NN + NN"
 
             # Проверка: разметка статей по терминам
             article_term_annotations = db_session.query(ArticleTermAnnotation).filter(
@@ -121,11 +124,9 @@ class TestHandle:
             assert article_term_annotations[0].start_char == 0
             assert article_term_annotations[0].end_char == 16
             assert article_term_annotations[0].surface_form == 'Cancer treatment'
-            assert article_term_annotations[0].pos_model == 'NN + NN'
             assert article_term_annotations[1].start_char == 20
             assert article_term_annotations[1].end_char == 37
             assert article_term_annotations[1].surface_form == 'effective therapy'
-            assert article_term_annotations[1].pos_model == 'NN + NN'
 
             article_term_annotations = db_session.query(ArticleTermAnnotation).filter(
                 ArticleTermAnnotation.article_id == article_ids[1]).order_by(
@@ -135,8 +136,6 @@ class TestHandle:
             assert article_term_annotations[0].start_char == 0
             assert article_term_annotations[0].end_char == 16
             assert article_term_annotations[0].surface_form == 'Cancer treatment'
-            assert article_term_annotations[0].pos_model == 'NN + NN'
             assert article_term_annotations[1].start_char == 21
             assert article_term_annotations[1].end_char == 50
             assert article_term_annotations[1].surface_form == 'elderly patients living alone'
-            assert article_term_annotations[1].pos_model == 'NN + NN + NN + NN'
