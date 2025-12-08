@@ -1,8 +1,8 @@
 # Информация об эксперименте.
 experiment:
-  name: Тестовый запуск
-  description: Тестовый запуск для проверки возможностей системы
-  directory: "workflows/Тестовый запуск"
+  name: Cancer breast calcification за 20 лет
+  description: Тренировочный пример
+  directory: "workflows/cancer breast calcification за 20 лет"
   author: Вагун И.В.
 
 # Этапы рабочего процесса в порядке их запуска из workflow.py.
@@ -26,7 +26,7 @@ stages:
         params:
           # Строка поиска по PubMed Central.
           # Документация: https://pmc.ncbi.nlm.nih.gov/about/userguide/
-          term: '(((calcification[Abstract]) AND cancer) AND breast) AND ("2015/01/01"[PubDate] : "2025/12/31"[PubDate])'
+          term: '(((calcification[Abstract]) AND cancer) AND breast) AND ("2005/01/01"[PubDate] : "2025/12/31"[PubDate])'
           # Лимит поиска
           retmax: 10000
 
