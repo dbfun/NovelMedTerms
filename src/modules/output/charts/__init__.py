@@ -1,6 +1,7 @@
 import logging
 
 from src.modules.module import ModuleInfo
+from src.modules.output.charts.pos_model_by_year import PosModelByYear
 from src.modules.output.charts.vocabulary_coverage import VocabularyCoverage
 from src.modules.output.charts.wordcloud_image import WordcloudImage
 from src.modules.output.output import Output
@@ -43,3 +44,9 @@ class ChartsOutput(Output):
             chart2 = WordcloudImage(session, dictionaries)
             chart2.handle(2, 200, output_file)
             self.logger.info(f"Результаты сохранены в файл {output_file}")
+
+            # Генерация графика "Динамика распределения POS-структур по годам, кроме униграмм"
+            chart3 = PosModelByYear(session, self._generate_output_file_path)
+            output_files = chart3.handle(10)
+            output_files = ", ".join([str(file) for file in output_files])
+            self.logger.info(f"Результаты сохранены в файлы {output_files}")
