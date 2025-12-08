@@ -47,6 +47,7 @@ stages:
         params:
           stopwords:
             - resources/dictionaries/stop-words/AidaStopWords.xlsx
+            - resources/dictionaries/stop-words/my_dict.txt
 
   - name: Этап поиска в словаре
     # Возможна работа нескольких словарей
