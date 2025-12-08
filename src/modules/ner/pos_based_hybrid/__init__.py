@@ -70,6 +70,7 @@ class PosBasedHybrid(Ner):
                 "start_pos": start_pos,
                 "end_pos": start_pos + len(term.strip()),
                 "surface_form": term.strip(),
+                "pos_model": self._term_pos_model(term)
             })
 
     @staticmethod

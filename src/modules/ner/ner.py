@@ -1,6 +1,7 @@
 import logging
 from abc import abstractmethod
 
+import nltk
 from cachetools import cached, LFUCache
 from sqlalchemy.orm import Session
 
@@ -22,7 +23,7 @@ class Ner(Module):
 
         Returns:
             Список словарей с данными о терминах:
-            [{"text": str, "word_count": int, "start_pos": int, "end_pos": int, "surface_form": str}, ...]
+            [{"text": str, "word_count": int, "start_pos": int, "end_pos": int, "surface_form": str, "pos_model": str}, ...]
         """
         pass
 
@@ -66,7 +67,6 @@ class Ner(Module):
                 # Извлекаем термины из аннотации
                 terms = self._extract_terms_from_text(article.abstract)
 
-
                 # Сохраняем термины и разметку статей по терминам в БД
                 for term_data in terms:
                     term_id = self._get_or_create_term_id(session, term_data)
@@ -78,6 +78,7 @@ class Ner(Module):
                         start_char=term_data["start_pos"],
                         end_char=term_data["end_pos"],
                         surface_form=term_data["surface_form"],
+                        pos_model=term_data["pos_model"],
                     )
                     session.add(article_term_annotation)
                     term_count += 1
@@ -117,3 +118,10 @@ class Ner(Module):
             session.flush()
 
         return term.id
+
+    @staticmethod
+    def _term_pos_model(term: str) -> str:
+        tokens = nltk.word_tokenize(term)
+        tagged = nltk.pos_tag(tokens)
+        pos_model = [o[1] for o in tagged]
+        return " + ".join(pos_model)

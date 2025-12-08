@@ -31,6 +31,8 @@ class TestArticleTermAnnotationFactory:
     def test_create(self, db_session):
         annotation = ArticleTermAnnotationFactory.create()
         assert annotation.term.term_text.startswith("term_")
+        assert annotation.surface_form.startswith("form_")
+        assert annotation.pos_model in ["NN", "NN + NN"]
 
 
 class TestModuleFactory:

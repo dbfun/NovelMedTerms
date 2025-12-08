@@ -1,6 +1,8 @@
 from datetime import date
 from unittest.mock import patch
 
+import pytest
+
 from src.modules.module import ModuleInfo
 from src.modules.ner.ner import Ner
 from src.orm.models import Article, Term, ArticleTermAnnotation
@@ -14,6 +16,21 @@ class NerStub(Ner):
     @staticmethod
     def info() -> ModuleInfo:
         return ModuleInfo(module="ner", type="pytest")
+
+
+class TestNer:
+    @pytest.mark.parametrize(
+        "term, expected",
+        [
+            ("calcification", "NN"),
+            ("breast cancer", "NN + NN"),
+            ("", "")
+        ],
+    )
+    def test_term_pos_model(self, term: str, expected: str) -> None:
+        """Проверка метода _term_pos_model"""
+        module = NerStub()
+        assert expected == module._term_pos_model(term)
 
 
 class TestHandle:
@@ -57,6 +74,7 @@ class TestHandle:
             "start_pos": 0,
             "end_pos": 16,
             "surface_form": "Cancer treatment",
+            "pos_model": "NN + NN",
         }
 
         term_2 = {
@@ -65,6 +83,7 @@ class TestHandle:
             "start_pos": 20,
             "end_pos": 37,
             "surface_form": "effective therapy",
+            "pos_model": "NN + NN",
         }
 
         term_3 = {
@@ -73,6 +92,7 @@ class TestHandle:
             "start_pos": 21,
             "end_pos": 50,
             "surface_form": "elderly patients living alone",
+            "pos_model": "NN + NN + NN + NN",
         }
 
         module = NerStub()
@@ -101,9 +121,11 @@ class TestHandle:
             assert article_term_annotations[0].start_char == 0
             assert article_term_annotations[0].end_char == 16
             assert article_term_annotations[0].surface_form == 'Cancer treatment'
+            assert article_term_annotations[0].pos_model == 'NN + NN'
             assert article_term_annotations[1].start_char == 20
             assert article_term_annotations[1].end_char == 37
             assert article_term_annotations[1].surface_form == 'effective therapy'
+            assert article_term_annotations[1].pos_model == 'NN + NN'
 
             article_term_annotations = db_session.query(ArticleTermAnnotation).filter(
                 ArticleTermAnnotation.article_id == article_ids[1]).order_by(
@@ -113,6 +135,8 @@ class TestHandle:
             assert article_term_annotations[0].start_char == 0
             assert article_term_annotations[0].end_char == 16
             assert article_term_annotations[0].surface_form == 'Cancer treatment'
+            assert article_term_annotations[0].pos_model == 'NN + NN'
             assert article_term_annotations[1].start_char == 21
             assert article_term_annotations[1].end_char == 50
             assert article_term_annotations[1].surface_form == 'elderly patients living alone'
+            assert article_term_annotations[1].pos_model == 'NN + NN + NN + NN'
