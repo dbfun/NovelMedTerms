@@ -129,4 +129,5 @@ class PosBasedHybrid(Ner):
 
     @staticmethod
     def _valid_pos_tag(tag) -> bool:
+        # Список тегов: https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html
         return ("NN" in tag) or ("FW" in tag) or ("VBG" in tag)
