@@ -11,7 +11,7 @@ class Cui(UmlsMetathesaurus):
     """
 
     def name(self) -> str:
-        return 'CUI'
+        return "CUI"
 
     def dict(self):
         return self._onto["CUI"]

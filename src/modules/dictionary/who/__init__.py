@@ -11,7 +11,7 @@ class Who(UmlsMetathesaurus):
     """
 
     def name(self) -> str:
-        return 'WHO'
+        return "WHO"
 
     def dict(self):
         return self._onto["WHO"]

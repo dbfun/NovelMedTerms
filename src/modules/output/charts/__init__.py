@@ -12,11 +12,13 @@ class ChartsOutput(Output):
     Модуль для графического вывода результатов.
     """
 
-    def __init__(self, dictionaries: list[str]):
+    def __init__(self, dpi: int, dictionaries: list[str]):
         """
         Args:
+            dpi: DPI для вывода графиков
             dictionaries: список словарей
         """
+        self.dpi = dpi
         self.dictionaries = set(dictionaries)
         self.logger = logging.getLogger(ChartsOutput.info().name())
 
@@ -35,18 +37,18 @@ class ChartsOutput(Output):
 
             # Генерация графика "Эволюция терминов в PubMed и их покрытие"
             output_file = self._generate_output_file_path("vocabulary_coverage.png")
-            chart1 = VocabularyCoverage(session, dictionaries)
+            chart1 = VocabularyCoverage(session, self.dpi, dictionaries)
             chart1.handle(output_file)
             self.logger.info(f"Результаты сохранены в файл {output_file}")
 
             # Генерация облака слов.
             output_file = self._generate_output_file_path("wordcloud.png")
-            chart2 = WordcloudImage(session, dictionaries)
+            chart2 = WordcloudImage(session, self.dpi, dictionaries)
             chart2.handle(2, 200, output_file)
             self.logger.info(f"Результаты сохранены в файл {output_file}")
 
             # Генерация графика "Динамика распределения POS-структур по годам, кроме униграмм"
-            chart3 = PosModelByYear(session, self._generate_output_file_path)
+            chart3 = PosModelByYear(session, self.dpi, self._generate_output_file_path)
             output_files = chart3.handle(10)
             output_files = ", ".join([str(file) for file in output_files])
             self.logger.info(f"Результаты сохранены в файлы {output_files}")

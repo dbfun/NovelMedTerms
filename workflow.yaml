@@ -93,6 +93,8 @@ stages:
       - module: output
         type: charts
         params:
+          # DPI для вывода графиков
+          dpi: 300
           # Варианты для dictionaries: MeSH, SNOMED CT, CUI, DrugBank, GO, HPO, ICD10, NCI, WHO.
           dictionaries:
             - MeSH

@@ -11,7 +11,7 @@ class Go(UmlsMetathesaurus):
     """
 
     def name(self) -> str:
-        return 'GO'
+        return "GO"
 
     def dict(self):
         return self._onto["GO"]

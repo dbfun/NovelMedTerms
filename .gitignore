@@ -4,4 +4,5 @@
 /tests/.env
 /tmp/
 /debug.py
+/prof.out
 __pycache__

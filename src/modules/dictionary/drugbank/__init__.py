@@ -11,7 +11,7 @@ class DrugBank(UmlsMetathesaurus):
     """
 
     def name(self) -> str:
-        return 'DrugBank'
+        return "DrugBank"
 
     def dict(self):
         return self._onto["DRUGBANK"]

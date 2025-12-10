@@ -11,7 +11,7 @@ class Icd10(UmlsMetathesaurus):
     """
 
     def name(self) -> str:
-        return 'ICD10'
+        return "ICD10"
 
     def dict(self):
         return self._onto["ICD10"]

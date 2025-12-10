@@ -11,7 +11,7 @@ class Nci(UmlsMetathesaurus):
     """
 
     def name(self) -> str:
-        return 'NCI'
+        return "NCI"
 
     def dict(self):
         return self._onto["NCI"]

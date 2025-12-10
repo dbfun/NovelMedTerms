@@ -11,7 +11,7 @@ class MeSH(UmlsMetathesaurus):
     """
 
     def name(self) -> str:
-        return 'MeSH'
+        return "MeSH"
 
     def dict(self):
         return self._onto["MSH"]

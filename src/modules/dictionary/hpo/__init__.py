@@ -11,7 +11,7 @@ class Hpo(UmlsMetathesaurus):
     """
 
     def name(self) -> str:
-        return 'HPO'
+        return "HPO"
 
     def dict(self):
         return self._onto["HPO"]

@@ -38,8 +38,21 @@ class UmlsDictionaryModule(Module):
             # Получаем все статьи из БД
             terms = session.query(Term).all()
 
+            # Эта часть работает медленно из-за dictionary.search(). Эта операция занимает ~ 93% времени.
+            # На 23066 терминах этап поиска в словаре MeSH выполняется 130-160 сек, загрузка CPU ~100% (один процесс).
+            # Было сделано профилирование и визуализация (открывается в браузере):
+            #   python -m cProfile -o prof.out workflow.py workflows/simple-dimple.yaml
+            #   snakeviz prof.out
+            # Установка snakeviz:
+            #   sudo apt install pipx
+            #   pipx ensurepath
+            #   pipx install snakeviz
+            # Далее была попытка сделать поиск параллельным за счет multiprocessing. Однако это не удалось сделать
+            # из-за блокировки БД воркерами. Была ошибка: "sqlite3.OperationalError: database is locked".
+            # Единственный вариант - сделать копии БД для каждого воркера, что накладно по месту на SSD.
             for term in terms:
                 try:
+                    # Узкое место производительности
                     result = dictionary.search(term.term_text)
                     if result is not None:
                         self._mark_term_as_known(session, dictionary_id, term.id, result)

@@ -13,8 +13,9 @@ class VocabularyCoverage():
     Генерация графика "Эволюция терминов в PubMed и их покрытие"
     """
 
-    def __init__(self, session: Session, dictionaries: list[Dictionary]):
+    def __init__(self, session: Session, dpi: int, dictionaries: list[Dictionary]):
         self.session = session
+        self.dpi = dpi
         self.dictionaries = dictionaries
 
     def handle(self, output_file_path: Path) -> None:
@@ -153,7 +154,7 @@ class VocabularyCoverage():
 
         # Финальные действия и сохранение
         plt.tight_layout()
-        plt.savefig(output_file_path, dpi=300, bbox_inches="tight")
+        plt.savefig(output_file_path, dpi=self.dpi, bbox_inches="tight")
         plt.close()
 
         enable_logging()

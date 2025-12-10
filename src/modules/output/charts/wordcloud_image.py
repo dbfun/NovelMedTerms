@@ -14,8 +14,9 @@ class WordcloudImage():
     Генерация облака слов.
     """
 
-    def __init__(self, session: Session, dictionaries: list[Dictionary]):
+    def __init__(self, session: Session, dpi: int, dictionaries: list[Dictionary]):
         self.session = session
+        self.dpi = dpi
         self.dictionaries = dictionaries
 
     def handle(self, min_word_count: int, max_terms: int, output_file_path: Path) -> None:
@@ -96,7 +97,7 @@ class WordcloudImage():
             freqs)
         plt.imshow(wc, interpolation="bilinear")
         plt.axis("off")
-        plt.savefig(output_file_path, dpi=300)
+        plt.savefig(output_file_path, dpi=self.dpi)
         plt.close()
 
         enable_logging()

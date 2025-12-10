@@ -11,7 +11,7 @@ class Snomed(UmlsMetathesaurus):
     """
 
     def name(self) -> str:
-        return 'SNOMED CT'
+        return "SNOMED CT"
 
     def dict(self):
         return self._onto["SNOMEDCT_US"]
