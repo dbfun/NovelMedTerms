@@ -48,7 +48,7 @@ class ChartsOutput(Output):
             self.logger.info(f"Результаты сохранены в файл {output_file}")
 
             # Генерация графика "Динамика распределения POS-структур по годам, кроме униграмм"
-            chart3 = PosModelByYear(session, self.dpi, self._generate_output_file_path)
+            chart3 = PosModelByYear(session, self.dpi, dictionaries, self._generate_output_file_path)
             output_files = chart3.handle(10)
             output_files = ", ".join([str(file) for file in output_files])
             self.logger.info(f"Результаты сохранены в файлы {output_files}")

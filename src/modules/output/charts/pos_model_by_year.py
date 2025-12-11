@@ -9,6 +9,7 @@ from sqlalchemy import text, bindparam
 from sqlalchemy.orm import Session
 
 from src.helper import disable_logging, enable_logging
+from src.orm.models import Dictionary
 
 
 class PosModelByYear():
@@ -16,9 +17,10 @@ class PosModelByYear():
     Динамика распределения POS-структур по годам, кроме униграмм.
     """
 
-    def __init__(self, session: Session, dpi: int, path_generator):
+    def __init__(self, session: Session, dpi: int, dictionaries: list[Dictionary], path_generator):
         self.session = session
         self.dpi = dpi
+        self.dictionaries = dictionaries
         self.path_generator = path_generator
 
     def handle(self, n_top: int) -> list[Path]:
@@ -64,7 +66,8 @@ class PosModelByYear():
         return [file_pos_model_by_year_abs, file_pos_model_by_year_rel, file_pos_model_by_year_facet]
 
     def _fetch_total_pos_models_by_year(self) -> list:
-        params = {}
+        params, joins_sql, where_sql = Dictionary.filter_not_in_dict(self.dictionaries)
+
         # Финальный SQL
         sql = text(f"""
             SELECT
@@ -73,6 +76,9 @@ class PosModelByYear():
             FROM terms t
                 JOIN article_term_annotations ann ON t.id = ann.term_id
                 JOIN articles a ON a.id = ann.article_id
+                {joins_sql}
+            WHERE 1=1 
+                {where_sql}
             GROUP BY year
         """)
 
@@ -82,12 +88,16 @@ class PosModelByYear():
         return self.session.execute(sql, params).mappings().all()
 
     def _fetch_top_pos_models(self, n_top: int) -> list:
-        params = {"n_top": n_top}
+        params, joins_sql, where_sql = Dictionary.filter_not_in_dict(self.dictionaries)
+        params.update({"n_top": n_top})
+
         # Финальный SQL
         sql = f"""
             SELECT pos_model, COUNT(*) AS count
-            FROM terms
+            FROM terms t
+                {joins_sql}
             WHERE word_count > 1
+                {where_sql}
             GROUP BY pos_model
             ORDER BY COUNT(*) DESC
             LIMIT :n_top
@@ -99,9 +109,8 @@ class PosModelByYear():
         return self.session.execute(text(sql), params).mappings().all()
 
     def _fetch_pos_models_by_year(self, top_pos_models: list) -> list:
-        params = {
-            "top_pos_models": [it["pos_model"] for it in top_pos_models]
-        }
+        params, joins_sql, where_sql = Dictionary.filter_not_in_dict(self.dictionaries)
+        params.update({"top_pos_models": [it["pos_model"] for it in top_pos_models]})
 
         # Финальный SQL
         sql = text(f"""
@@ -112,7 +121,9 @@ class PosModelByYear():
             FROM terms t
                 JOIN article_term_annotations ann ON t.id = ann.term_id
                 JOIN articles a ON a.id = ann.article_id
+                {joins_sql}
             WHERE t.pos_model IN :top_pos_models
+                {where_sql}
             GROUP BY year, pos_model
         """).bindparams(bindparam("top_pos_models", expanding=True))
 
@@ -256,7 +267,7 @@ class PosModelByYear():
 
         # Объединяем с общим количеством, чтобы посчитать относительные значения
         df = df.merge(total_df, on="year", suffixes=("", "_total"))
-        df["relative"] = df["count"] / df["count_total"]  # доля
+        df["relative"] = df["count"] / df["count_total"] * 100 # Процент
 
         # Оставлено для отладки
         # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
