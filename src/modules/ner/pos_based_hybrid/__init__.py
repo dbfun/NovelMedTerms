@@ -64,14 +64,18 @@ class PosBasedHybrid(Ner):
 
     def _add_term_if_valid(self, ret: list, start_pos: int, term: str, word_count: int):
         if len(term) > self.MIN_TERM_LENGTH:
-            ret.append({
-                "text": term.strip().lower(),
-                "word_count": word_count,
-                "start_pos": start_pos,
-                "end_pos": start_pos + len(term.strip()),
-                "surface_form": term.strip(),
-                "pos_model": self._term_pos_model(term),
-            })
+            text = term.strip().lower()
+            # Прошлая фильтрация по списку стоп-слов работала с отдельными словами.
+            # Тут дополнительно фильтруются термины, состоящие из нескольких слов (например, "mean age").
+            if text not in self.stop_words:
+                ret.append({
+                    "text": text,
+                    "word_count": word_count,
+                    "start_pos": start_pos,
+                    "end_pos": start_pos + len(term.strip()),
+                    "surface_form": term.strip(),
+                    "pos_model": self._term_pos_model(term),
+                })
 
     @staticmethod
     def _clean_word(word: str) -> tuple[str, bool]:
