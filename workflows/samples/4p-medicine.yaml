@@ -1,0 +1,120 @@
+# Информация об эксперименте.
+experiment:
+  name: Медицина 4П за 20 лет
+  description: "Медицина 4П, Медицина – 2030. 4П: Предсказание, профилактика, персонализация и партисипативность (участие пациента)"
+  directory: "workflows/4p-medicine"
+  author: Вагун И.В.
+
+# Этапы рабочего процесса в порядке их запуска из workflow.py.
+stages:
+
+  # Можно пропустить, если статьи уже были загружены ранее с теми же параметрами.
+  - name: Этап импорта статей
+    modules:
+      # Очистка базы статей из прошлого запуска.
+      - module: cleaner
+        type: database
+        params:
+          # Список моделей для очистки.
+          models:
+            - Article
+      # Импорт статей.
+      # Возможен запуск одного модуля несколько раз с разными параметрами.
+      # Реализован PubMed Central.
+      - module: fetcher
+        type: pubmed-central
+        params:
+          # Строка поиска по PubMed Central.
+          # Документация: https://pmc.ncbi.nlm.nih.gov/about/userguide/
+          term: >
+            (
+                "P4 medicine"[Title/Abstract] OR
+                "4P medicine"[Title/Abstract] OR
+                "Predictive Preventive Personalized Participatory"[Title/Abstract] OR
+                "Participatory medicine"[Title/Abstract] OR
+                "Predictive medicine"[Title/Abstract] OR
+                "Personalized medicine"[Title/Abstract] OR
+                "Personalised medicine"[Title/Abstract] OR
+                "Personalized treatment"[Title/Abstract] OR
+                "Personalised treatment"[Title/Abstract]
+            )
+            AND 2005:2025[DP]
+          # Лимит поиска
+          retmax: 100000
+
+  - name: Этап извлечения именованных сущностей
+    # Возможна работа нескольких модулей.
+    # Есть привязка термина к модулю, который его извлек.
+    # Если термин извлечен несколькими модулями, сохраняется привязка к ним всем.
+    modules:
+      # Очистка базы данных от прошлого запуска
+      - module: cleaner
+        type: database
+        params:
+          models:
+            - Term
+      - module: ner
+        # Варианты: pos-based-hybrid, transformer
+        type: pos-based-hybrid
+        params:
+          stopwords:
+            - resources/dictionaries/stop-words/AidaStopWords.xlsx
+            - resources/dictionaries/stop-words/my_dict.csv
+
+  - name: Этап поиска в словаре
+    # Возможна работа нескольких словарей
+    # Варианты для type: MeSH, SNOMED CT, CUI, DrugBank, GO, HPO, ICD10, NCI, WHO.
+    modules:
+      - module: dictionary
+        type: MeSH
+      - module: dictionary
+        type: SNOMED CT
+      - module: dictionary
+        type: CUI
+      - module: dictionary
+        type: DrugBank
+      - module: dictionary
+        type: GO
+      - module: dictionary
+        type: HPO
+      - module: dictionary
+        type: ICD10
+      - module: dictionary
+        type: NCI
+      - module: dictionary
+        type: WHO
+
+  - name: Этап вывода результатов
+    modules:
+      # Запись в Excel всех извлеченных терминов по годам с указанием вхождения в словари
+      - module: output
+        type: excel
+        params:
+          # Варианты для dictionaries: MeSH, SNOMED CT, CUI, DrugBank, GO, HPO, ICD10, NCI, WHO.
+          dictionaries:
+            - MeSH
+            - SNOMED CT
+            - CUI
+            - DrugBank
+            - GO
+            - HPO
+            - ICD10
+            - NCI
+            - WHO
+      # Построение диаграмм по извлеченным терминам
+      - module: output
+        type: charts
+        params:
+          # DPI для вывода графиков
+          dpi: 300
+          # Варианты для dictionaries: MeSH, SNOMED CT, CUI, DrugBank, GO, HPO, ICD10, NCI, WHO.
+          dictionaries:
+            - MeSH
+            - SNOMED CT
+            - CUI
+            - DrugBank
+            - GO
+            - HPO
+            - ICD10
+            - NCI
+            - WHO
