@@ -25,6 +25,7 @@ from .dictionary.icd10 import DictionaryIcd10
 from .dictionary.nci import DictionaryNci
 from .dictionary.who import DictionaryWho
 from .fetcher.pubmed_central import PubMedCentralFetcher
+from .fetcher.pubmed import PubMedFetcher
 from .ner.pos_based_hybrid import PosBasedHybrid
 from .output.excel import ExcelOutput
 from .output.charts import ChartsOutput
@@ -32,6 +33,7 @@ from .pytest.pytest_module import PytestModule
 
 register_module(CleanerDatabase)
 register_module(PubMedCentralFetcher)
+register_module(PubMedFetcher)
 register_module(PosBasedHybrid)
 register_module(PytestModule)
 register_module(DictionaryMesh)

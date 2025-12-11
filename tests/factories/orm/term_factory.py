@@ -1,5 +1,3 @@
-import random
-
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
 

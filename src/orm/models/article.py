@@ -20,6 +20,7 @@ class Article(BaseModel):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     pmcid: Mapped[str] = mapped_column(unique=True, index=True, nullable=True, comment="Идентификатор PMCID")
+    pmid: Mapped[str] = mapped_column(unique=True, index=True, nullable=True, comment="Идентификатор PMID")
     title: Mapped[str] = mapped_column(Text, nullable=False, comment="Название статьи")
     authors: Mapped[str] = mapped_column(Text, nullable=False, comment="Список авторов")
     abstract: Mapped[str] = mapped_column(Text, nullable=False, comment="Аннотация")
@@ -42,6 +43,14 @@ class Article(BaseModel):
             raise ValueError("Поле pmcid слишком длинное")
         return value.strip()
 
+    @validates("pmid")
+    def validate_pmid(self, key, value) -> None:
+        if not value or len(value.strip()) == 0:
+            raise ValueError("Поле pmid не может быть пустым")
+        if len(value) > 50:
+            raise ValueError("Поле pmid слишком длинное")
+        return value.strip()
+
     @validates("abstract")
     def validate_abstract(self, key, value) -> None:
         if not value or len(value.strip()) == 0:
@@ -57,11 +66,17 @@ class Article(BaseModel):
 
     def __str__(self):
 
-        id = self.id
-        pmcid = self.pmcid
-        title = self.title
-        authors = self.authors
-        abstract = self.abstract
-        pubdate = self.pubdate
+        identifier = (
+            f"pmcid={self.pmcid}"
+            if self.pmcid is not None
+            else f"pmid={self.pmid}"
+        )
 
-        return f"{id=}\n{pmcid=}\n{title=}\n{authors=}\n{abstract=}\n{pubdate=}"
+        return (
+            f"id={self.id}\n"
+            f"{identifier}\n"
+            f"title={self.title}\n"
+            f"authors={self.authors}\n"
+            f"abstract={self.abstract}\n"
+            f"pubdate={self.pubdate}"
+        )

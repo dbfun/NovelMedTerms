@@ -20,7 +20,7 @@ stages:
             - Article
       # Импорт статей.
       # Возможен запуск одного модуля несколько раз с разными параметрами.
-      # Реализован PubMed Central.
+      # Варианты: "pubmed", "pubmed-central".
       - module: fetcher
         type: pubmed-central
         params:
