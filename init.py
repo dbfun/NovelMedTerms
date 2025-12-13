@@ -49,6 +49,7 @@ def load_dictionaries():
     nltk.download("punkt_tab", quiet=True)
     nltk.download("stopwords", quiet=True)
     nltk.download("averaged_perceptron_tagger", quiet=True)
+    nltk.download("averaged_perceptron_tagger_eng", quiet=True)
 
 
 def load_umls_dictionaries():
