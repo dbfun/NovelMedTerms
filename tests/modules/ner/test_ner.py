@@ -3,14 +3,14 @@ from unittest.mock import patch
 
 import pytest
 
+from factories.orm import ArticleFactory
 from src.modules.module import ModuleInfo
-from src.modules.ner.ner import Ner
+from src.modules.ner.ner import Ner, TermDto
 from src.orm.models import Article, Term, ArticleTermAnnotation
 
 
 class NerStub(Ner):
     def _extract_terms_from_text(self, text):
-        # будет переписано через patch
         return []
 
     @staticmethod
@@ -19,6 +19,10 @@ class NerStub(Ner):
 
 
 class TestNer:
+    """
+    Проверка отдельных методов.
+    """
+
     @pytest.mark.parametrize(
         "term, expected",
         [
@@ -29,8 +33,30 @@ class TestNer:
     )
     def test_term_pos_model(self, term: str, expected: str) -> None:
         """Проверка метода _term_pos_model"""
-        module = NerStub()
+        module = NerStub(["abstract"])
         assert expected == module._term_pos_model(term)
+
+    def test_extract_terms_from_article_field(self) -> None:
+        """
+        Проверка метода _extract_terms_from_article_field.
+        Метод должен добавлять article_field в TermDto.
+        """
+
+        term_1 = TermDto(
+            text="cancer treatment",
+            word_count=2,
+            start_pos=0,
+            end_pos=16,
+            surface_form="Cancer treatment",
+            pos_model="NN + NN",
+        )
+
+        module = NerStub(["abstract"])
+        with patch.object(module, "_extract_terms_from_text", side_effect=[[term_1]]):
+            article = ArticleFactory.build()
+            field = "abstract"
+            dto = module._extract_terms_from_article_field(article, field)
+            assert dto[0].article_field == field
 
 
 class TestHandle:
@@ -50,15 +76,15 @@ class TestHandle:
         # Подготовка: создаем тестовые статьи
         article1 = Article(
             pmcid="PMC01",
-            authors="Test Author",
-            title="Test Title",
+            authors="First Author",
+            title="First Title",
             abstract="Cancer treatment is effective therapy.",
             pubdate=date(2021, 1, 1)
         )
         article2 = Article(
             pmcid="PMC02",
-            authors="Test Author",
-            title="Test Title",
+            authors="Second Author",
+            title="Second Title",
             abstract="Cancer treatment for elderly patients living alone.",
             pubdate=date(2021, 1, 1)
         )
@@ -67,36 +93,40 @@ class TestHandle:
 
         article_ids = [article1.id, article2.id]
 
-        # Мокаем "_extract_terms_from_text" - будут возвращаться определенные значения.
-        term_1 = {
-            "text": "cancer treatment",
-            "word_count": 2,
-            "start_pos": 0,
-            "end_pos": 16,
-            "surface_form": "Cancer treatment",
-            "pos_model": "NN + NN",
-        }
+        # Мокаем "_extract_terms_from_article_field" - будут возвращаться определенные значения.
+        term_1 = TermDto(
+            text="cancer treatment",
+            word_count=2,
+            start_pos=0,
+            end_pos=16,
+            surface_form="Cancer treatment",
+            pos_model="NN + NN",
+            article_field="abstract",
+        )
 
-        term_2 = {
-            "text": "effective therapy",
-            "word_count": 2,
-            "start_pos": 20,
-            "end_pos": 37,
-            "surface_form": "effective therapy",
-            "pos_model": "NN + NN",
-        }
+        term_2 = TermDto(
+            text="effective therapy",
+            word_count=2,
+            start_pos=20,
+            end_pos=37,
+            surface_form="effective therapy",
+            pos_model="NN + NN",
+            article_field="abstract",
+        )
 
-        term_3 = {
-            "text": "elderly patients living alone",
-            "word_count": 4,
-            "start_pos": 21,
-            "end_pos": 50,
-            "surface_form": "elderly patients living alone",
-            "pos_model": "NN + NN + NN + NN",
-        }
+        term_3 = TermDto(
+            text="elderly patients living alone",
+            word_count=4,
+            start_pos=21,
+            end_pos=50,
+            surface_form="elderly patients living alone",
+            pos_model="NN + NN + NN + NN",
+            article_field="abstract",
+        )
 
-        module = NerStub()
-        with patch.object(module, "_extract_terms_from_text", side_effect=[[term_1, term_2], [term_1, term_3]]):
+        module = NerStub(["abstract"])
+        with patch.object(module, "_extract_terms_from_article_field",
+                          side_effect=[[term_1, term_2], [term_1, term_3]]):
             # Запуск извлечения терминов
             module.handle()
 
@@ -105,13 +135,13 @@ class TestHandle:
 
             assert len(term) == 3, "Термины должны быть извлечены и сохранены"
 
-            assert term[0].term_text == 'cancer treatment'
+            assert term[0].term_text == "cancer treatment"
             assert term[0].word_count == 2
             assert term[0].pos_model == "NN + NN"
-            assert term[1].term_text == 'effective therapy'
+            assert term[1].term_text == "effective therapy"
             assert term[1].word_count == 2
             assert term[1].pos_model == "NN + NN"
-            assert term[2].term_text == 'elderly patients living alone'
+            assert term[2].term_text == "elderly patients living alone"
             assert term[2].word_count == 4
             assert term[2].pos_model == "NN + NN + NN + NN"
 
@@ -123,10 +153,12 @@ class TestHandle:
 
             assert article_term_annotations[0].start_char == 0
             assert article_term_annotations[0].end_char == 16
-            assert article_term_annotations[0].surface_form == 'Cancer treatment'
+            assert article_term_annotations[0].surface_form == "Cancer treatment"
+            assert article_term_annotations[0].article_field == "abstract"
             assert article_term_annotations[1].start_char == 20
             assert article_term_annotations[1].end_char == 37
-            assert article_term_annotations[1].surface_form == 'effective therapy'
+            assert article_term_annotations[1].surface_form == "effective therapy"
+            assert article_term_annotations[1].article_field == "abstract"
 
             article_term_annotations = db_session.query(ArticleTermAnnotation).filter(
                 ArticleTermAnnotation.article_id == article_ids[1]).order_by(
@@ -135,7 +167,9 @@ class TestHandle:
 
             assert article_term_annotations[0].start_char == 0
             assert article_term_annotations[0].end_char == 16
-            assert article_term_annotations[0].surface_form == 'Cancer treatment'
+            assert article_term_annotations[0].surface_form == "Cancer treatment"
+            assert article_term_annotations[0].article_field == "abstract"
             assert article_term_annotations[1].start_char == 21
             assert article_term_annotations[1].end_char == 50
-            assert article_term_annotations[1].surface_form == 'elderly patients living alone'
+            assert article_term_annotations[1].surface_form == "elderly patients living alone"
+            assert article_term_annotations[1].article_field == "abstract"

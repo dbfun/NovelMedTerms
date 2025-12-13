@@ -265,9 +265,10 @@ class PosModelByYear():
         total_df["year"] = total_df["year"].astype(int)
         total_df["count"] = total_df["count"].astype(int)
 
-        # Объединяем с общим количеством, чтобы посчитать относительные значения
+        # Объединяем с общим количеством, чтобы посчитать %
         df = df.merge(total_df, on="year", suffixes=("", "_total"))
-        df["relative"] = df["count"] / df["count_total"] * 100 # Процент
+        # Расчет процентов
+        df["relative"] = df["count"] / df["count_total"] * 100
 
         # Оставлено для отладки
         # with pd.option_context('display.max_rows', None, 'display.max_columns', None):

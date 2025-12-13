@@ -32,6 +32,7 @@ class TestArticleTermAnnotationFactory:
         annotation = ArticleTermAnnotationFactory.create()
         assert annotation.term.term_text.startswith("term_")
         assert annotation.surface_form.startswith("form_")
+        assert annotation.article_field == "abstract"
 
 
 class TestModuleFactory:

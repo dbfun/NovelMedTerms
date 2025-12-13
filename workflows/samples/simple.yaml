@@ -52,6 +52,12 @@ stages:
         # Варианты: pos-based-hybrid, transformer
         type: pos-based-hybrid
         params:
+          # Список полей из статьи для извлечения именованных сущностей
+          # Варианты: title, abstract
+          article_fields:
+            - title
+            - abstract
+          # Списки стоп-слов
           stopwords:
             - resources/dictionaries/stop-words/AidaStopWords.xlsx
             - resources/dictionaries/stop-words/my_dict.csv

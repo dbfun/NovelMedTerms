@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
+from src.modules.ner.ner import TermDto
 from src.modules.ner.pos_based_hybrid import PosBasedHybrid
 
 
@@ -20,14 +21,14 @@ class TestIsTerm:
     @pytest.fixture
     def module_missing_stopwords(self):
         """Модуль без стоп-слов."""
-        module = PosBasedHybrid()
+        module = PosBasedHybrid(["abstract"])
         module.stop_words = {}
         return module
 
     @pytest.fixture
     def module_with_stopwords(self):
         """Модуль со стоп-словами."""
-        module = PosBasedHybrid()
+        module = PosBasedHybrid(["abstract"])
         module.stop_words = {self.STOP_WORD}
         return module
 
@@ -94,7 +95,7 @@ class TestCleanWord:
 
     @pytest.fixture
     def module(self):
-        return PosBasedHybrid()
+        return PosBasedHybrid(["abstract"])
 
     @pytest.mark.parametrize(
         "input_word,expected",
@@ -158,117 +159,100 @@ class TestExtractTermsFromText:
     @pytest.fixture
     def module(self):
         """Фикстура для создания экземпляра модуля."""
-        return PosBasedHybrid()
+        return PosBasedHybrid(["abstract"])
 
     def test_real_abstract(self, module):
         """Проверка извлечения терминов на примере реальной статьи."""
         text = "OBJECTIVE: We compared the diagnostic values of mammography and magnetic resonance imaging (MRI) for evaluating breast masses. METHODS: We retrospectively analyzed mammography, MRI, and histopathological data for 377 patients with breast masses on mammography, including 73 benign and 304 malignant masses. RESULTS: The sensitivities and negative predictive values (NPVs) were significantly higher for MRI compared with mammography for detecting breast cancer (98.4% vs. 89.8% and 87.8% vs. 46.6%, respectively). The specificity and positive predictive values (PPV) were similar for both techniques. Compared with mammography alone, mammography plus MRI improved the specificity (67.1% vs. 37.0%) and PPV (91.8% vs. 85.6%), but there was no significant difference in sensitivity or NPV. Compared with MRI alone, the combination significantly improved the specificity (67.1% vs. 49.3%), but the sensitivity (88.5% vs. 98.4%) and NPV (58.3% vs. 87.8%) were reduced, and the PPV was similar in both groups. There was no significant difference between mammography and MRI in terms of sensitivity or specificity among 81 patients with breast masses with calcification. CONCLUSION: Breast MRI improved the sensitivity and NPV for breast cancer detection. Combining MRI and mammography improved the specificity and PPV, but MRI offered no advantage in patients with breast masses with calcification."
         expected = [
-            {'text': 'objective', 'word_count': 1, 'start_pos': 0, 'end_pos': 9, 'surface_form': 'objective',
-             'pos_model': 'NN'},
-            {'text': 'mammography', 'word_count': 1, 'start_pos': 48, 'end_pos': 59, 'surface_form': 'mammography',
-             'pos_model': 'NN'},
-            {'text': 'resonance imaging mri', 'word_count': 3, 'start_pos': 73, 'end_pos': 94,
-             'surface_form': 'resonance imaging mri', 'pos_model': 'NN + VBG + NN'},
-            {'text': 'evaluating breast', 'word_count': 2, 'start_pos': 101, 'end_pos': 118,
-             'surface_form': 'evaluating breast', 'pos_model': 'VBG + NN'},
-            {'text': 'mammography', 'word_count': 1, 'start_pos': 164, 'end_pos': 175,
-             'surface_form': 'mammography', 'pos_model': 'NN'},
-            {'text': 'mri', 'word_count': 1, 'start_pos': 177, 'end_pos': 180, 'surface_form': 'mri',
-             'pos_model': 'NN'},
-            {'text': 'breast', 'word_count': 1, 'start_pos': 231, 'end_pos': 237, 'surface_form': 'breast',
-             'pos_model': 'NN'},
-            {'text': 'mammography', 'word_count': 1, 'start_pos': 248, 'end_pos': 259,
-             'surface_form': 'mammography', 'pos_model': 'NN'},
-            {'text': 'including benign', 'word_count': 2, 'start_pos': 261, 'end_pos': 277,
-             'surface_form': 'including benign', 'pos_model': 'VBG + NN'},
-            {'text': 'malignant', 'word_count': 1, 'start_pos': 289, 'end_pos': 298,
-             'surface_form': 'malignant', 'pos_model': 'NN'},
-            {'text': 'predictive', 'word_count': 1, 'start_pos': 347, 'end_pos': 357,
-             'surface_form': 'predictive', 'pos_model': 'NN'},
-            {'text': 'npvs', 'word_count': 1, 'start_pos': 366, 'end_pos': 370, 'surface_form': 'npvs',
-             'pos_model': 'NN'},
-            {'text': 'mri', 'word_count': 1, 'start_pos': 402, 'end_pos': 405, 'surface_form': 'mri',
-             'pos_model': 'NN'},
-            {'text': 'mammography', 'word_count': 1, 'start_pos': 420, 'end_pos': 431,
-             'surface_form': 'mammography', 'pos_model': 'NN'},
-            {'text': 'detecting breast cancer vs', 'word_count': 4, 'start_pos': 436, 'end_pos': 462,
-             'surface_form': 'detecting breast cancer vs', 'pos_model': 'VBG + NN + NN + NN'},
-            {'text': 'specificity', 'word_count': 1, 'start_pos': 517, 'end_pos': 528,
-             'surface_form': 'specificity', 'pos_model': 'NN'},
-            {'text': 'predictive', 'word_count': 1, 'start_pos': 542, 'end_pos': 552,
-             'surface_form': 'predictive', 'pos_model': 'NN'},
-            {'text': 'ppv', 'word_count': 1, 'start_pos': 561, 'end_pos': 564, 'surface_form': 'ppv',
-             'pos_model': 'NN'},
-            {'text': 'mammography', 'word_count': 1, 'start_pos': 614, 'end_pos': 625,
-             'surface_form': 'mammography', 'pos_model': 'NN'},
-            {'text': 'mammography', 'word_count': 1, 'start_pos': 633, 'end_pos': 644,
-             'surface_form': 'mammography', 'pos_model': 'NN'},
-            {'text': 'mri', 'word_count': 1, 'start_pos': 650, 'end_pos': 653, 'surface_form': 'mri',
-             'pos_model': 'NN'},
-            {'text': 'specificity vs', 'word_count': 2, 'start_pos': 667, 'end_pos': 681,
-             'surface_form': 'specificity vs', 'pos_model': 'NN + NN'},
-            {'text': 'ppv vs', 'word_count': 2, 'start_pos': 701, 'end_pos': 707, 'surface_form': 'ppv vs',
-             'pos_model': 'NN + NN'},
-            {'text': 'difference', 'word_count': 1, 'start_pos': 753, 'end_pos': 763,
-             'surface_form': 'difference', 'pos_model': 'NN'},
-            {'text': 'sensitivity', 'word_count': 1, 'start_pos': 767, 'end_pos': 778,
-             'surface_form': 'sensitivity', 'pos_model': 'NN'},
-            {'text': 'npv', 'word_count': 1, 'start_pos': 782, 'end_pos': 785, 'surface_form': 'npv',
-             'pos_model': 'NN'},
-            {'text': 'mri', 'word_count': 1, 'start_pos': 801, 'end_pos': 804, 'surface_form': 'mri',
-             'pos_model': 'NN'},
-            {'text': 'combination', 'word_count': 1, 'start_pos': 816, 'end_pos': 827,
-             'surface_form': 'combination', 'pos_model': 'NN'},
-            {'text': 'specificity vs', 'word_count': 2, 'start_pos': 855, 'end_pos': 869,
-             'surface_form': 'specificity vs', 'pos_model': 'NN + NN'},
-            {'text': 'sensitivity vs', 'word_count': 2, 'start_pos': 894, 'end_pos': 908,
-             'surface_form': 'sensitivity vs', 'pos_model': 'NN + NN'},
-            {'text': 'npv vs', 'word_count': 2, 'start_pos': 928, 'end_pos': 934, 'surface_form': 'npv vs',
-             'pos_model': 'NNS + NN'},
-            {'text': 'ppv', 'word_count': 1, 'start_pos': 972, 'end_pos': 975, 'surface_form': 'ppv',
-             'pos_model': 'NN'},
-            {'text': 'difference', 'word_count': 1, 'start_pos': 1029, 'end_pos': 1039,
-             'surface_form': 'difference', 'pos_model': 'NN'},
-            {'text': 'mammography', 'word_count': 1, 'start_pos': 1048, 'end_pos': 1059,
-             'surface_form': 'mammography', 'pos_model': 'NN'},
-            {'text': 'mri', 'word_count': 1, 'start_pos': 1064, 'end_pos': 1067, 'surface_form': 'mri',
-             'pos_model': 'NN'},
-            {'text': 'sensitivity', 'word_count': 1, 'start_pos': 1080, 'end_pos': 1091,
-             'surface_form': 'sensitivity', 'pos_model': 'NN'},
-            {'text': 'specificity', 'word_count': 1, 'start_pos': 1095, 'end_pos': 1106,
-             'surface_form': 'specificity', 'pos_model': 'NN'},
-            {'text': 'breast', 'word_count': 1, 'start_pos': 1130, 'end_pos': 1136, 'surface_form': 'breast',
-             'pos_model': 'NN'},
-            {'text': 'calcification', 'word_count': 1, 'start_pos': 1149, 'end_pos': 1162,
-             'surface_form': 'calcification', 'pos_model': 'NN'},
-            {'text': 'conclusion', 'word_count': 1, 'start_pos': 1164, 'end_pos': 1174,
-             'surface_form': 'conclusion', 'pos_model': 'NN'},
-            {'text': 'breast mri', 'word_count': 2, 'start_pos': 1176, 'end_pos': 1186,
-             'surface_form': 'breast mri', 'pos_model': 'NN + NN'},
-            {'text': 'sensitivity', 'word_count': 1, 'start_pos': 1200, 'end_pos': 1211,
-             'surface_form': 'sensitivity', 'pos_model': 'NN'},
-            {'text': 'npv', 'word_count': 1, 'start_pos': 1216, 'end_pos': 1219, 'surface_form': 'npv',
-             'pos_model': 'NN'},
-            {'text': 'breast cancer detection', 'word_count': 3, 'start_pos': 1224, 'end_pos': 1247,
-             'surface_form': 'breast cancer detection', 'pos_model': 'NN + NN + NN'},
-            {'text': 'combining mri', 'word_count': 2, 'start_pos': 1249, 'end_pos': 1262,
-             'surface_form': 'combining mri', 'pos_model': 'VBG + NN'},
-            {'text': 'mammography', 'word_count': 1, 'start_pos': 1267, 'end_pos': 1278,
-             'surface_form': 'mammography', 'pos_model': 'NN'},
-            {'text': 'specificity', 'word_count': 1, 'start_pos': 1292, 'end_pos': 1303,
-             'surface_form': 'specificity', 'pos_model': 'NN'},
-            {'text': 'ppv', 'word_count': 1, 'start_pos': 1308, 'end_pos': 1311, 'surface_form': 'ppv',
-             'pos_model': 'NN'},
-            {'text': 'mri', 'word_count': 1, 'start_pos': 1317, 'end_pos': 1320, 'surface_form': 'mri',
-             'pos_model': 'NN'},
-            {'text': 'advantage', 'word_count': 1, 'start_pos': 1332, 'end_pos': 1341,
-             'surface_form': 'advantage', 'pos_model': 'NN'},
-            {'text': 'breast', 'word_count': 1, 'start_pos': 1359, 'end_pos': 1365, 'surface_form': 'breast',
-             'pos_model': 'NN'},
-            {'text': 'calcification', 'word_count': 1, 'start_pos': 1378, 'end_pos': 1391,
-             'surface_form': 'calcification', 'pos_model': 'NN'}
-        ]
+            TermDto(text='objective', word_count=1, start_pos=0, end_pos=9, surface_form='objective', pos_model='NN'),
+            TermDto(text='mammography', word_count=1, start_pos=48, end_pos=59, surface_form='mammography',
+                    pos_model='NN'),
+            TermDto(text='resonance imaging mri', word_count=3, start_pos=73, end_pos=94,
+                    surface_form='resonance imaging mri', pos_model='NN + VBG + NN'),
+            TermDto(text='evaluating breast', word_count=2, start_pos=101, end_pos=118,
+                    surface_form='evaluating breast', pos_model='VBG + NN'),
+            TermDto(text='mammography', word_count=1, start_pos=164, end_pos=175, surface_form='mammography',
+                    pos_model='NN'),
+            TermDto(text='mri', word_count=1, start_pos=177, end_pos=180, surface_form='mri', pos_model='NN'),
+            TermDto(text='breast', word_count=1, start_pos=231, end_pos=237, surface_form='breast', pos_model='NN'),
+            TermDto(text='mammography', word_count=1, start_pos=248, end_pos=259, surface_form='mammography',
+                    pos_model='NN'),
+            TermDto(text='including benign', word_count=2, start_pos=261, end_pos=277, surface_form='including benign',
+                    pos_model='VBG + NN'),
+            TermDto(text='malignant', word_count=1, start_pos=289, end_pos=298, surface_form='malignant',
+                    pos_model='NN'),
+            TermDto(text='predictive', word_count=1, start_pos=347, end_pos=357, surface_form='predictive',
+                    pos_model='NN'),
+            TermDto(text='npvs', word_count=1, start_pos=366, end_pos=370, surface_form='npvs', pos_model='NN'),
+            TermDto(text='mri', word_count=1, start_pos=402, end_pos=405, surface_form='mri', pos_model='NN'),
+            TermDto(text='mammography', word_count=1, start_pos=420, end_pos=431, surface_form='mammography',
+                    pos_model='NN'),
+            TermDto(text='detecting breast cancer vs', word_count=4, start_pos=436, end_pos=462,
+                    surface_form='detecting breast cancer vs', pos_model='VBG + NN + NN + NN'),
+            TermDto(text='specificity', word_count=1, start_pos=517, end_pos=528, surface_form='specificity',
+                    pos_model='NN'),
+            TermDto(text='predictive', word_count=1, start_pos=542, end_pos=552, surface_form='predictive',
+                    pos_model='NN'),
+            TermDto(text='ppv', word_count=1, start_pos=561, end_pos=564, surface_form='ppv', pos_model='NN'),
+            TermDto(text='mammography', word_count=1, start_pos=614, end_pos=625, surface_form='mammography',
+                    pos_model='NN'),
+            TermDto(text='mammography', word_count=1, start_pos=633, end_pos=644, surface_form='mammography',
+                    pos_model='NN'),
+            TermDto(text='mri', word_count=1, start_pos=650, end_pos=653, surface_form='mri', pos_model='NN'),
+            TermDto(text='specificity vs', word_count=2, start_pos=667, end_pos=681, surface_form='specificity vs',
+                    pos_model='NN + NN'),
+            TermDto(text='ppv vs', word_count=2, start_pos=701, end_pos=707, surface_form='ppv vs',
+                    pos_model='NN + NN'),
+            TermDto(text='difference', word_count=1, start_pos=753, end_pos=763, surface_form='difference',
+                    pos_model='NN'),
+            TermDto(text='sensitivity', word_count=1, start_pos=767, end_pos=778, surface_form='sensitivity',
+                    pos_model='NN'),
+            TermDto(text='npv', word_count=1, start_pos=782, end_pos=785, surface_form='npv', pos_model='NN'),
+            TermDto(text='mri', word_count=1, start_pos=801, end_pos=804, surface_form='mri', pos_model='NN'),
+            TermDto(text='combination', word_count=1, start_pos=816, end_pos=827, surface_form='combination',
+                    pos_model='NN'),
+            TermDto(text='specificity vs', word_count=2, start_pos=855, end_pos=869, surface_form='specificity vs',
+                    pos_model='NN + NN'),
+            TermDto(text='sensitivity vs', word_count=2, start_pos=894, end_pos=908, surface_form='sensitivity vs',
+                    pos_model='NN + NN'),
+            TermDto(text='npv vs', word_count=2, start_pos=928, end_pos=934, surface_form='npv vs',
+                    pos_model='NNS + NN'),
+            TermDto(text='ppv', word_count=1, start_pos=972, end_pos=975, surface_form='ppv', pos_model='NN'),
+            TermDto(text='difference', word_count=1, start_pos=1029, end_pos=1039, surface_form='difference',
+                    pos_model='NN'),
+            TermDto(text='mammography', word_count=1, start_pos=1048, end_pos=1059, surface_form='mammography',
+                    pos_model='NN'),
+            TermDto(text='mri', word_count=1, start_pos=1064, end_pos=1067, surface_form='mri', pos_model='NN'),
+            TermDto(text='sensitivity', word_count=1, start_pos=1080, end_pos=1091, surface_form='sensitivity',
+                    pos_model='NN'),
+            TermDto(text='specificity', word_count=1, start_pos=1095, end_pos=1106, surface_form='specificity',
+                    pos_model='NN'),
+            TermDto(text='breast', word_count=1, start_pos=1130, end_pos=1136, surface_form='breast', pos_model='NN'),
+            TermDto(text='calcification', word_count=1, start_pos=1149, end_pos=1162, surface_form='calcification',
+                    pos_model='NN'),
+            TermDto(text='conclusion', word_count=1, start_pos=1164, end_pos=1174, surface_form='conclusion',
+                    pos_model='NN'),
+            TermDto(text='breast mri', word_count=2, start_pos=1176, end_pos=1186, surface_form='breast mri',
+                    pos_model='NN + NN'),
+            TermDto(text='sensitivity', word_count=1, start_pos=1200, end_pos=1211, surface_form='sensitivity',
+                    pos_model='NN'),
+            TermDto(text='npv', word_count=1, start_pos=1216, end_pos=1219, surface_form='npv', pos_model='NN'),
+            TermDto(text='breast cancer detection', word_count=3, start_pos=1224, end_pos=1247,
+                    surface_form='breast cancer detection', pos_model='NN + NN + NN'),
+            TermDto(text='combining mri', word_count=2, start_pos=1249, end_pos=1262, surface_form='combining mri',
+                    pos_model='VBG + NN'),
+            TermDto(text='mammography', word_count=1, start_pos=1267, end_pos=1278, surface_form='mammography',
+                    pos_model='NN'),
+            TermDto(text='specificity', word_count=1, start_pos=1292, end_pos=1303, surface_form='specificity',
+                    pos_model='NN'),
+            TermDto(text='ppv', word_count=1, start_pos=1308, end_pos=1311, surface_form='ppv', pos_model='NN'),
+            TermDto(text='mri', word_count=1, start_pos=1317, end_pos=1320, surface_form='mri', pos_model='NN'),
+            TermDto(text='advantage', word_count=1, start_pos=1332, end_pos=1341, surface_form='advantage',
+                    pos_model='NN'),
+            TermDto(text='breast', word_count=1, start_pos=1359, end_pos=1365, surface_form='breast', pos_model='NN'),
+            TermDto(text='calcification', word_count=1, start_pos=1378, end_pos=1391, surface_form='calcification',
+                    pos_model='NN')]
 
         actual = module._extract_terms_from_text(text)
 

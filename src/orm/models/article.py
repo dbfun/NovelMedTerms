@@ -64,6 +64,9 @@ class Article(BaseModel):
             raise ValueError("Поле pubdate не может быть в будущем")
         return value
 
+    def get_text(self, field: str) -> str:
+        return getattr(self, field)
+
     def __str__(self):
 
         identifier = (

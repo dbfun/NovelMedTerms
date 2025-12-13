@@ -1,7 +1,7 @@
 import nltk
 
 from src.modules.module import ModuleInfo
-from src.modules.ner.ner import Ner
+from src.modules.ner.ner import Ner, TermDto
 
 
 class PosBasedHybrid(Ner):
@@ -19,7 +19,7 @@ class PosBasedHybrid(Ner):
     def info() -> ModuleInfo:
         return ModuleInfo(module="ner", type="pos-based-hybrid")
 
-    def _extract_terms_from_text(self, text: str) -> list[dict]:
+    def _extract_terms_from_text(self, text: str) -> list[TermDto]:
         char_pos = 0
         ret = []
 
@@ -62,20 +62,21 @@ class PosBasedHybrid(Ner):
 
         return ret
 
-    def _add_term_if_valid(self, ret: list, start_pos: int, term: str, word_count: int):
+    def _add_term_if_valid(self, ret: list[TermDto], start_pos: int, term: str, word_count: int):
         if len(term) > self.MIN_TERM_LENGTH:
             text = term.strip().lower()
             # Прошлая фильтрация по списку стоп-слов работала с отдельными словами.
             # Тут дополнительно фильтруются термины, состоящие из нескольких слов (например, "mean age").
             if text not in self.stop_words:
-                ret.append({
-                    "text": text,
-                    "word_count": word_count,
-                    "start_pos": start_pos,
-                    "end_pos": start_pos + len(term.strip()),
-                    "surface_form": term.strip(),
-                    "pos_model": self._term_pos_model(term),
-                })
+                dto = TermDto(
+                    text=text,
+                    word_count=word_count,
+                    start_pos=start_pos,
+                    end_pos=start_pos + len(term.strip()),
+                    surface_form=term.strip(),
+                    pos_model=self._term_pos_model(term)
+                )
+                ret.append(dto)
 
     @staticmethod
     def _clean_word(word: str) -> tuple[str, bool]:

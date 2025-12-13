@@ -15,20 +15,20 @@ module = container.module(
 """
 from src.modules.module_registry import register_module
 from .cleaner.database import CleanerDatabase
-from .dictionary.mesh import DictionaryMesh
-from .dictionary.snomed import DictionarySnomed
 from .dictionary.cui import DictionaryCui
 from .dictionary.drugbank import DictionaryDrugBank
 from .dictionary.go import DictionaryGo
 from .dictionary.hpo import DictionaryHpo
 from .dictionary.icd10 import DictionaryIcd10
+from .dictionary.mesh import DictionaryMesh
 from .dictionary.nci import DictionaryNci
+from .dictionary.snomed import DictionarySnomed
 from .dictionary.who import DictionaryWho
-from .fetcher.pubmed_central import PubMedCentralFetcher
 from .fetcher.pubmed import PubMedFetcher
+from .fetcher.pubmed_central import PubMedCentralFetcher
 from .ner.pos_based_hybrid import PosBasedHybrid
-from .output.excel import ExcelOutput
 from .output.charts import ChartsOutput
+from .output.excel import ExcelOutput
 from .pytest.pytest_module import PytestModule
 
 register_module(CleanerDatabase)
