@@ -73,6 +73,7 @@ class PubMedFetcher(Module):
                                 abstract=rec.get("AB"),
                                 authors=", ".join(rec.get("AU", [])),
                                 pubdate=self._parse_pubdate(rec.get("DP")),
+                                author_keywords=rec.get("OT"),
                             )
 
                             stmt = insert(Article).values(
@@ -80,7 +81,8 @@ class PubMedFetcher(Module):
                                 title=article.title,
                                 abstract=article.abstract,
                                 authors=article.authors,
-                                pubdate=article.pubdate
+                                pubdate=article.pubdate,
+                                author_keywords=article.author_keywords,
                             ).on_conflict_do_nothing(index_elements=["pmid"])
 
                             session.execute(stmt)

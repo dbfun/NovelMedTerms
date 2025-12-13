@@ -24,3 +24,8 @@ class ArticleFactory(SQLAlchemyModelFactory):
     title = factory.Faker("sentence")
     abstract = factory.Faker("text")
     pubdate = factory.LazyFunction(date.today)
+    author_keywords = factory.List([
+        factory.Faker("word"),
+        factory.Faker("word"),
+        factory.Faker("word"),
+    ])

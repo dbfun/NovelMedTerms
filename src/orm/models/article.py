@@ -2,7 +2,7 @@ import datetime
 from datetime import date, timedelta
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Text, Index
+from sqlalchemy import Text, Index, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.orm import validates
 
@@ -25,6 +25,11 @@ class Article(BaseModel):
     authors: Mapped[str] = mapped_column(Text, nullable=False, comment="Список авторов")
     abstract: Mapped[str] = mapped_column(Text, nullable=False, comment="Аннотация")
     pubdate: Mapped[datetime.date] = mapped_column(nullable=False, comment="Дата публикации")
+    author_keywords: Mapped[list[str]] = mapped_column(
+        JSON,
+        nullable=True,
+        comment="Авторские ключевые слова (поле OT)"
+    )
 
     # Связи с другими таблицами БД
     annotations: Mapped[list["ArticleTermAnnotation"]] = relationship("ArticleTermAnnotation", back_populates="article",

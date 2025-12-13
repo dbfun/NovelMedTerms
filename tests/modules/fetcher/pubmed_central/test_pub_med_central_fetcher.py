@@ -23,6 +23,7 @@ class TestPubMedCentralFetcher:
                 "AB": "Test Abstract",
                 "AU": ["Test Author"],
                 "DP": "2025",
+                "OT": ["keyword"],
             }
         ]
 
@@ -44,3 +45,4 @@ class TestPubMedCentralFetcher:
         assert saved_article.authors == "Test Author"
         assert saved_article.abstract == "Test Abstract"
         assert saved_article.pubdate == datetime.date(2025, 1, 1)
+        assert saved_article.author_keywords == ["keyword"]
