@@ -30,6 +30,11 @@ class Article(BaseModel):
         nullable=True,
         comment="Авторские ключевые слова (поле OT)"
     )
+    publication_type: Mapped[list[str]] = mapped_column(
+        JSON,
+        nullable=True,
+        comment="Тип публикации (поле PT)"
+    )
 
     # Связи с другими таблицами БД
     annotations: Mapped[list["ArticleTermAnnotation"]] = relationship("ArticleTermAnnotation", back_populates="article",

@@ -29,3 +29,7 @@ class ArticleFactory(SQLAlchemyModelFactory):
         factory.Faker("word"),
         factory.Faker("word"),
     ])
+    publication_type = factory.List([
+        factory.Faker("word"),
+        factory.Faker("word"),
+    ])

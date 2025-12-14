@@ -24,6 +24,7 @@ class TestPubMedFetcher:
                 "AU": ["Test Author"],
                 "DP": "2025",
                 "OT": ["keyword"],
+                "PT": ["Journal Article", "Observational Study"],
             }
         ]
 
@@ -46,3 +47,4 @@ class TestPubMedFetcher:
         assert saved_article.abstract == "Test Abstract"
         assert saved_article.pubdate == datetime.date(2025, 1, 1)
         assert saved_article.author_keywords == ["keyword"]
+        assert saved_article.publication_type == ["Journal Article", "Observational Study"]
