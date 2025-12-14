@@ -272,7 +272,7 @@ class PosModelByYear():
         df["relative"] = df["count"] / df["count_total"] * 100
 
         # Оставлено для отладки
-        # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        # with pd.option_context("display.max_rows", None, "display.max_columns", None):
         #     print(df)
 
         # Список всех POS-моделей (топовые уже отфильтрованы)
@@ -281,6 +281,8 @@ class PosModelByYear():
         # Small multiples с Seaborn
         g = sns.FacetGrid(df, col="pos_model", col_wrap=5, height=3.5, sharey=False)
         g.map_dataframe(sns.scatterplot, x="year", y="relative")
+        g.set_axis_labels("Год", "Доля, %")
+        g.set_titles(col_template="POS-структура = {col_name}")
 
         # Добавляем регрессию и статистику для каждой модели
         for ax, model in zip(g.axes.flatten(), top_models):
