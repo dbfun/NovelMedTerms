@@ -14,22 +14,29 @@ class WordcloudImage():
     Генерация облака слов.
     """
 
-    def __init__(self, session: Session, dpi: int, dictionaries: list[Dictionary]):
+    def __init__(self, session: Session, dpi: int, dictionaries: list[Dictionary], path_generator):
         self.session = session
         self.dpi = dpi
         self.dictionaries = dictionaries
+        self.path_generator = path_generator
 
-    def handle(self, min_word_count: int, max_terms: int, output_file_path: Path) -> None:
+    def handle(self, min_word_count: int, max_terms: int) -> list[Path]:
         """
         Запуск генерации
 
         Args:
             min_word_count: минимальное количества слов в термине
             max_terms: максимальное количество терминов в облаке слов
-            output_file_path: путь к файлу для сохранения результатов
+        Returns:
+            Список файлов
         """
+
+        # Генерация имен файлов
+        output_file = self.path_generator("wordcloud.png")
         results = self._fetch_results(min_word_count, max_terms)
-        self._generate_chart(results, max_terms, output_file_path)
+        self._generate_chart(results, max_terms, output_file)
+
+        return [output_file]
 
     def _fetch_results(self, min_word_count: int, max_terms: int) -> list:
         """

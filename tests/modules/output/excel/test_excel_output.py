@@ -150,10 +150,9 @@ class TestExcelOutput:
         # Запускаем _generate_excel с фикстурой
         module = ExcelOutput([])
         module.experiment = fake_experiment
-        module._generate_excel([term_statistics_result])
+        excel_file = module._generate_excel([term_statistics_result])
 
         # Проверка наличия файла
-        excel_file = module._generate_output_file_path("statistics.xlsx")
         assert excel_file.exists(), "Excel файл не найден"
 
         # Проверка структуры файла

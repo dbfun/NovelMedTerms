@@ -1,4 +1,4 @@
-import logging
+from pathlib import Path
 
 import pandas as pd
 from sqlalchemy import text
@@ -19,8 +19,8 @@ class ExcelOutput(Output):
         Args:
             dictionaries: список словарей
         """
+        super().__init__()
         self.dictionaries = set(dictionaries)
-        self.logger = logging.getLogger(ExcelOutput.info().name())
 
     @staticmethod
     def info() -> ModuleInfo:
@@ -35,7 +35,9 @@ class ExcelOutput(Output):
 
             results = self._load_statistics(session, dictionaries)
 
-            self._generate_excel(results)
+            excel_file = self._generate_excel(results)
+            if excel_file:
+                self._print_results(ExcelOutput, [excel_file])
 
     def _load_statistics(self, session: Session, dictionaries: list[Dictionary]):
         """
@@ -127,7 +129,7 @@ class ExcelOutput(Output):
 
         return ret
 
-    def _generate_excel(self, results: list[dict]) -> None:
+    def _generate_excel(self, results: list[dict]) -> Path | None:
         """
         Генерация Excel из результатов.
 
@@ -145,5 +147,4 @@ class ExcelOutput(Output):
         self._create_experiment_dir()
         excel_file = self._generate_output_file_path("statistics.xlsx")
         df.to_excel(excel_file, index=False)
-
-        self.logger.info(f"Результаты сохранены в файл {excel_file}")
+        return excel_file

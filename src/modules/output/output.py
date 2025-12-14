@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 from sqlalchemy.orm import Session
@@ -7,6 +8,9 @@ from src.orm.models import Dictionary
 
 
 class Output(Module):
+    def __init__(self):
+        self.logger = logging.getLogger(self.info().name())
+
     def _load_dictionaries(self, session: Session, dict_names: set[str]) -> list[Dictionary]:
         """
         Получение списка словарей из БД для дальнейшей подстановки в SQL.
@@ -46,3 +50,7 @@ class Output(Module):
             полный путь к файлу
         """
         return Path(self.experiment.directory) / name
+
+    def _print_results(self, handler: type, output_files: list[Path]) -> None:
+        output_files = ", ".join([str(file) for file in output_files])
+        self.logger.info(f"[{handler.__name__}] результаты сохранены в файлы: {output_files}")
