@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import pandas as pd
 from matplotlib import pyplot as plt
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -32,11 +33,20 @@ class WordcloudImage():
         """
 
         # Генерация имен файлов
-        output_file = self.path_generator("wordcloud.png")
-        results = self._fetch_results(min_word_count, max_terms)
-        self._generate_chart(results, max_terms, output_file)
+        wordcloud_img_file = self.path_generator("wordcloud.png")
+        wordcloud_csv_file = self.path_generator("wordcloud.csv")
 
-        return [output_file]
+        # Получение результатов
+        results = self._fetch_results(min_word_count, max_terms)
+
+        # WordCloud имеет дефолтное значение max_words=200, поэтому передаем реальное значение для
+        # случая, когда терминов более 200.
+        self._generate_chart(results, max_terms, wordcloud_img_file)
+
+        # Не передаем max_words, это не нужно
+        self._generate_csv(results, wordcloud_csv_file)
+
+        return [wordcloud_img_file, wordcloud_csv_file]
 
     def _fetch_results(self, min_word_count: int, max_terms: int) -> list:
         """
@@ -85,3 +95,11 @@ class WordcloudImage():
         plt.close()
 
         enable_logging()
+
+    def _generate_csv(self, results: list, output_file_path: Path) -> None:
+        df = pd.DataFrame(results)
+        df.sort_values("count", ascending=False).to_csv(
+            output_file_path,
+            index=False,
+            encoding="utf-8"
+        )
