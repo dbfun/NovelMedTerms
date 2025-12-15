@@ -2,7 +2,6 @@ import logging
 from abc import abstractmethod
 from typing import Optional
 
-import nltk
 from cachetools import cached, LFUCache
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -162,10 +161,3 @@ class Ner(Module):
             session.flush()
 
         return term.id
-
-    @staticmethod
-    def _term_pos_model(term: str) -> str:
-        tokens = nltk.word_tokenize(term)
-        tagged = nltk.pos_tag(tokens)
-        pos_model = [o[1] for o in tagged]
-        return " + ".join(pos_model)

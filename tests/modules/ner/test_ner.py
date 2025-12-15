@@ -1,8 +1,6 @@
 from datetime import date
 from unittest.mock import patch
 
-import pytest
-
 from factories.orm import ArticleFactory
 from src.modules.module import ModuleInfo
 from src.modules.ner.ner import Ner, TermDto
@@ -22,19 +20,6 @@ class TestNer:
     """
     Проверка отдельных методов.
     """
-
-    @pytest.mark.parametrize(
-        "term, expected",
-        [
-            ("calcification", "NN"),
-            ("breast cancer", "NN + NN"),
-            ("", "")
-        ],
-    )
-    def test_term_pos_model(self, term: str, expected: str) -> None:
-        """Проверка метода _term_pos_model"""
-        module = NerStub(["abstract"])
-        assert expected == module._term_pos_model(term)
 
     def test_extract_terms_from_article_field(self) -> None:
         """

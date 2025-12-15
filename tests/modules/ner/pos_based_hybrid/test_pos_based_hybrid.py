@@ -39,46 +39,46 @@ class TestIsTerm:
         mock_pos_tag.return_value = [(word, tag)] if word else []
 
     # Позитивные случаи (термины)
-    @pytest.mark.parametrize("word,tag", [
-        ("cancer", "NN"),  # существительное, ед. число
-        ("learning", "VBG"),  # глагол, герундий/настоящее причастие
-        ("diabetes", "FW"),  # иностранное слово
+    @pytest.mark.parametrize("word,tag,expected", [
+        ("cancer", "NN", (True, ["NN"])),  # существительное, ед. число
+        ("learning", "VBG", (True, ["VBG"])),  # глагол, герундий/настоящее причастие
+        ("diabetes", "FW", (True, ["FW"])),  # иностранное слово
     ])
     @patch("nltk.pos_tag")
     @patch("nltk.word_tokenize")
-    def test_positive_cases(self, mock_tokenize, mock_pos_tag, module_missing_stopwords, word, tag):
+    def test_positive_cases(self, mock_tokenize, mock_pos_tag, module_missing_stopwords, word, tag, expected):
         """Слова с допустимыми POS-тегами считаются терминами."""
         TestIsTerm.mock_pos(mock_tokenize, mock_pos_tag, word, tag)
-        assert module_missing_stopwords._is_term(word) is True
+        assert module_missing_stopwords._is_term(word) == expected
 
     # Негативные случаи (не термин)
-    @pytest.mark.parametrize("word,tag", [
-        ("quickly", "RB"),  # наречие
-        ("run", "VB"),  # глагол
-        ("red", "JJ"),  # прилагательное
-        ("walked", "VBD"),  # прошедшее время
-        ("in", "IN"),  # предлог
-        ("", ""),  # пустая строка
-        ("123", "CD"),  # цифры
+    @pytest.mark.parametrize("word,tag,expected", [
+        ("quickly", "RB", (False, [])),  # наречие
+        ("run", "VB", (False, [])),  # глагол
+        ("red", "JJ", (False, [])),  # прилагательное
+        ("walked", "VBD", (False, [])),  # прошедшее время
+        ("in", "IN", (False, [])),  # предлог
+        ("", "", (False, [])),  # пустая строка
+        ("123", "CD", (False, [])),  # цифры
     ])
     @patch("nltk.pos_tag")
     @patch("nltk.word_tokenize")
-    def test_negative_cases(self, mock_tokenize, mock_pos_tag, module_missing_stopwords, word, tag):
+    def test_negative_cases(self, mock_tokenize, mock_pos_tag, module_missing_stopwords, word, tag, expected):
         """Слова с недопустимыми POS-тегами не считаются терминами."""
         TestIsTerm.mock_pos(mock_tokenize, mock_pos_tag, word, tag)
-        assert module_missing_stopwords._is_term(word) is False
+        assert module_missing_stopwords._is_term(word) == expected
 
     # Стоп-слова
-    @pytest.mark.parametrize("word,tag", [
-        (STOP_WORD, "NN"),
-        (STOP_WORD.upper(), "NN"),
+    @pytest.mark.parametrize("word,tag,expected", [
+        (STOP_WORD, "NN", (False, [])),
+        (STOP_WORD.upper(), "NN", (False, [])),
     ])
     @patch("nltk.pos_tag")
     @patch("nltk.word_tokenize")
-    def test_stopwords(self, mock_tokenize, mock_pos_tag, module_with_stopwords, word, tag):
+    def test_stopwords(self, mock_tokenize, mock_pos_tag, module_with_stopwords, word, tag, expected):
         """Стоп-слова не считаются терминами независимо от регистра."""
         TestIsTerm.mock_pos(mock_tokenize, mock_pos_tag, word, tag)
-        assert module_with_stopwords._is_term(word) is False
+        assert module_with_stopwords._is_term(word) == expected
 
     # Комбинированные случаи
     @patch("nltk.pos_tag")
@@ -87,7 +87,7 @@ class TestIsTerm:
         """Если хотя бы одно слово в compound имеет тег NN — считается термином."""
         mock_tokenize.return_value = ["multi", "word"]
         mock_pos_tag.return_value = [("multi", "JJ"), ("word", "NN")]
-        assert module_missing_stopwords._is_term("multi-word") is True
+        assert module_missing_stopwords._is_term("multi-word") == (True, ["JJ", "NN"])
 
 
 class TestCleanWord:
@@ -217,7 +217,7 @@ class TestExtractTermsFromText:
             TermDto(text='sensitivity vs', word_count=2, start_pos=894, end_pos=908, surface_form='sensitivity vs',
                     pos_model='NN + NN'),
             TermDto(text='npv vs', word_count=2, start_pos=928, end_pos=934, surface_form='npv vs',
-                    pos_model='NNS + NN'),
+                    pos_model='NN + NN'),
             TermDto(text='ppv', word_count=1, start_pos=972, end_pos=975, surface_form='ppv', pos_model='NN'),
             TermDto(text='difference', word_count=1, start_pos=1029, end_pos=1039, surface_form='difference',
                     pos_model='NN'),

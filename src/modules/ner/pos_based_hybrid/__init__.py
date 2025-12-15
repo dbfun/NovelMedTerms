@@ -27,6 +27,7 @@ class PosBasedHybrid(Ner):
         term = ""
         start_pos = 0
         word_count = 0
+        term_pos = []
         is_term = False  # если в термине есть существительное или герундий, то это термин
         while char_pos < text_len:
             if text[char_pos].isalpha():
@@ -37,10 +38,13 @@ class PosBasedHybrid(Ner):
                 if term == "":
                     start_pos = char_pos
                     word_count = 0
+                    term_pos = []
 
-                if self._is_term(cleaned_word):  # Надо раньше анализировать!!!
+                is_valid, pos_tags = self._is_term(cleaned_word)
+                if is_valid:  # Надо раньше анализировать!!!
                     term = term + cleaned_word + " "
-                    word_count += 1
+                    word_count += len(pos_tags)
+                    term_pos += pos_tags
                 else:
                     stop_w = True
                 char_pos += len(next_word)  # Позиция следующего символа за словом
@@ -53,16 +57,21 @@ class PosBasedHybrid(Ner):
 
                 if cond1 or cond2:
                     if not is_term:
-                        is_term = self._is_term(term)
+                        is_term, pos_tags = self._is_term(term)
                     if is_term:
-                        self._add_term_if_valid(ret, start_pos, term, word_count)
+                        self._add_term_if_valid(ret, start_pos, term, word_count, term_pos)
                         term = ""
                         is_term = False
             char_pos += 1
 
         return ret
 
-    def _add_term_if_valid(self, ret: list[TermDto], start_pos: int, term: str, word_count: int):
+    def _add_term_if_valid(self,
+                           ret: list[TermDto],
+                           start_pos: int,
+                           term: str,
+                           word_count: int,
+                           term_pos: list) -> None:
         if len(term) > self.MIN_TERM_LENGTH:
             text = term.strip().lower()
             # Прошлая фильтрация по списку стоп-слов работала с отдельными словами.
@@ -74,7 +83,7 @@ class PosBasedHybrid(Ner):
                     start_pos=start_pos,
                     end_pos=start_pos + len(term.strip()),
                     surface_form=term.strip(),
-                    pos_model=self._term_pos_model(term)
+                    pos_model=" + ".join(term_pos)
                 )
                 ret.append(dto)
 
@@ -102,7 +111,7 @@ class PosBasedHybrid(Ner):
         word = word.strip()
         return word, end_of_term
 
-    def _is_term(self, term: str) -> bool:
+    def _is_term(self, term: str) -> tuple[bool, list[str]]:
         """
         Проверяет, подходит ли слово для включения в термин.
 
@@ -118,7 +127,7 @@ class PosBasedHybrid(Ner):
         """
 
         if term.lower() in self.stop_words:
-            return False
+            return False, []
 
         tokens = nltk.word_tokenize(term)
         tagged = nltk.pos_tag(tokens)
@@ -130,8 +139,9 @@ class PosBasedHybrid(Ner):
             # В частности, "case control" попадает в термины.
 
             if PosBasedHybrid._valid_pos_tag(tag):
-                return True
-        return False
+                pos_tags = [tag for _, tag in tagged]
+                return True, pos_tags
+        return False, []
 
     @staticmethod
     def _valid_pos_tag(tag) -> bool:
