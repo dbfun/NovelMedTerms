@@ -45,7 +45,7 @@ class ExperimentFactory(factory.Factory):
 
 class ConfigFactory(factory.Factory):
     """
-    Фабрика для создания Config. Тестовая конфигурация, аналог workflow.yaml
+    Фабрика для создания Config. Тестовая конфигурация, аналог yaml-файла workflow
     """
 
     class Meta:

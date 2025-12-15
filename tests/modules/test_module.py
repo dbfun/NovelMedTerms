@@ -10,7 +10,7 @@ class TestModule:
 
     def test_container_module(self):
         """
-        Проверка создания модуля через container.module(). Формат определяется в workflow.yaml:
+        Проверка создания модуля через container.module(). Формат определяется в yaml-файле workflow:
 
         - module: pytest
           type: pytest

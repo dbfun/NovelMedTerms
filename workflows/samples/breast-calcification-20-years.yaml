@@ -1,8 +1,8 @@
 # Информация об эксперименте.
 experiment:
   name: Cancer breast calcification за 20 лет
-  description: Тренировочный пример
-  directory: "workflows/cancer breast calcification за 20 лет"
+  description: Cancer breast calcification за 20 лет
+  directory: "workflows/Cancer breast calcification за 20 лет"
   author: Вагун И.В.
 
 # Этапы рабочего процесса в порядке их запуска из workflow.py.

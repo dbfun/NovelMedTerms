@@ -1,4 +1,4 @@
-"""Схема workflow.yaml для типизации"""
+"""Схема yaml-файла workflow для типизации"""
 from typing import List, Optional, Dict, Any
 
 from pydantic import BaseModel, Field
