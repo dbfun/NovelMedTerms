@@ -133,8 +133,10 @@ sudo apt install -y libpq-dev
 
 Все эти этапы вынесены в отдельные модули, а их запуск осуществляется скриптом **workflow.py**.
 
-Последовательность выполнения и параметры модулей задаются в управляющем **yaml-файле**,
-например [demo.yaml](workflows/samples/demo.yaml).
+Последовательность выполнения и параметры модулей задаются в управляющем **yaml-файле**.
+
+* [workflow.yaml](workflow.yaml) - демонстрационный пример.
+* [samples](workflows/samples) - каталог с другими примерами.
 
 Рекомендуется создать копию этого файла для проведения экспериментов, чтобы:
 
@@ -144,7 +146,7 @@ sudo apt install -y libpq-dev
 
 ### Сценарий использования
 
-1. Скопируйте файл `workflows/samples/demo.yaml` в каталог `workflows`, предназначенный для пользовательских конфигураций.
+1. Скопируйте файл `workflow.yaml` в каталог `workflows`, предназначенный для пользовательских конфигураций.
 2. Внесите необходимые изменения:
     * обновите название, описание эксперимента и его рабочий каталог в разделе `experiment`;
     * измените конфигурацию этапов в разделе `stages`.
@@ -155,7 +157,7 @@ sudo apt install -y libpq-dev
 
 ```bash
 # Копирование базового workflow
-cp workflows/samples/demo.yaml workflows/variant-1.yaml
+cp workflow.yaml workflows/variant-1.yaml
 
 # Внесение изменений
 vim workflows/variant-1.yaml
@@ -213,7 +215,7 @@ pytest
 Скопируйте базовый workflow во временный файл `manual-test.yaml`:
 
 ```bash
-cp workflows/samples/demo.yaml workflows/manual-test.yaml
+cp workflow.yaml workflows/manual-test.yaml
 ```
 
 Активируйте виртуальное окружение:
