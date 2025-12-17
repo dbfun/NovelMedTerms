@@ -10,7 +10,7 @@ from src.orm.models import Dictionary
 
 class VocabularyCoverage():
     """
-    Генерация графика "Эволюция терминов в PubMed и их покрытие"
+    Генерация графика "Количество терминов в PubMed и их покрытие словарями"
     """
 
     def __init__(self, session: Session, dpi: int, dictionaries: list[Dictionary]):
@@ -108,7 +108,7 @@ class VocabularyCoverage():
         total = [d["total_count"] for d in results]
 
         plt.figure(figsize=(12, 6))
-        plt.title("Эволюция терминов в PubMed и их покрытие словарями")
+        plt.title("Количество терминов в PubMed и их покрытие словарями")
         plt.xticks(years)
 
         # Левая ось: общее количество терминов
