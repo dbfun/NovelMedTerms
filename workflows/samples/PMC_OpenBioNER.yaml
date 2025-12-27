@@ -1,8 +1,8 @@
 # Информация об эксперименте.
 experiment:
-  name: Cancer breast calcification за 20 лет
-  description: Cancer breast calcification за 20 лет
-  directory: "workflows/Cancer breast calcification за 20 лет"
+  name: PMC + OpenBioNER
+  description: "breast + calcification + cancer на PMC с использованием трансформера OpenBioNER"
+  directory: "workflows/PMC_OpenBioNER"
   author: Вагун И.В.
 
 # Этапы рабочего процесса в порядке их запуска из workflow.py.
@@ -43,7 +43,7 @@ stages:
             - Term
       - module: ner
         # Варианты: pos-based-hybrid, transformer
-        type: pos-based-hybrid
+        type: transformer-open-bioner
         params:
           # Список полей из статьи для извлечения именованных сущностей
           # Варианты: title, abstract

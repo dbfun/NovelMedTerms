@@ -19,6 +19,7 @@ class TermDto(BaseModel):
     end_pos: int
     surface_form: str
     pos_model: str
+    label: Optional[str] = None
     article_field: Optional[str] = None
 
 
@@ -85,7 +86,7 @@ class Ner(Module):
             for article in articles:
                 terms = self._extract_terms(article)
                 if not terms:
-                    self.logger.debug(f"Статья {article.id} пропущена: отсутствует текст")
+                    self.logger.debug(f"Статья {article.id} пропущена: отсутствуют термины")
                     continue
 
                 # Сохраняем термины и разметку статей по терминам в БД
@@ -155,7 +156,8 @@ class Ner(Module):
         if not term:
             term = Term(term_text=term_dto.text,
                         word_count=term_dto.word_count,
-                        pos_model=term_dto.pos_model
+                        pos_model=term_dto.pos_model,
+                        label=term_dto.label,
                         )
             session.add(term)
             session.flush()

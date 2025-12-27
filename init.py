@@ -6,8 +6,11 @@ from pathlib import Path
 
 import nltk
 import requests
+import spacy.cli
 from dotenv import load_dotenv
+from gliner import GLiNER
 from sqlalchemy import inspect
+from transformers import AutoTokenizer
 
 from src.container import container
 from src.orm import models
@@ -76,7 +79,8 @@ def load_umls_dictionaries():
         # Доступные варианты - взял из сорцов owlready2:
         # ['SRC', 'SNOMEDCT_US', 'ICD10', 'ICPC', 'MDR', 'LNC', 'MSH', 'AIR', 'ALT', 'AOD', 'AOT', 'ATC', 'BI', 'CCC', 'CCPSS', 'CCS', 'CCS_10', 'CDT', 'CHV', 'COSTAR', 'CPM', 'CPT', 'CSP', 'CST', 'CVX', 'DDB', 'DRUGBANK', 'DSM-5', 'DXP', 'FMA', 'GO', 'GS', 'HCDT', 'HCPCS', 'HCPT', 'HGNC', 'HL7V2.5', 'HL7V3.0', 'HPO', 'ICD10AE', 'ICD10AM', 'ICD10AMAE', 'ICD10CM', 'ICD10PCS', 'ICD9CM', 'ICF', 'ICF-CY', 'ICNP', 'ICPC2EENG', 'ICPC2ICD10ENG', 'ICPC2P', 'JABL', 'LCH', 'LCH_NW', 'MCM', 'MED-RT', 'MEDCIN', 'MEDLINEPLUS', 'MMSL', 'MMX', 'MTH', 'MTHCMSFRF', 'MTHHH', 'MTHICD9', 'MTHICPC2EAE', 'MTHICPC2ICD10AE', 'MTHMST', 'MTHSPL', 'MVX', 'NANDA-I', 'NCBI', 'NCI', 'NCI_BRIDG', 'NCI_BioC', 'NCI_CDC', 'NCI_CDISC', 'NCI_CDISC-GLOSS', 'NCI_CRCH', 'NCI_CTCAE', 'NCI_CTCAE_3', 'NCI_CTCAE_5', 'NCI_CTEP-SDC', 'NCI_CTRP', 'NCI_CareLex', 'NCI_DCP', 'NCI_DICOM', 'NCI_DTP', 'NCI_FDA', 'NCI_GAIA', 'NCI_GENC', 'NCI_ICH', 'NCI_JAX', 'NCI_KEGG', 'NCI_NCI-GLOSS', 'NCI_NCI-HGNC', 'NCI_NCI-HL7', 'NCI_NCPDP', 'NCI_NICHD', 'NCI_PI-RADS', 'NCI_PID', 'NCI_RENI', 'NCI_UCUM', 'NCI_ZFin', 'NDDF', 'NDFRT', 'NDFRT_FDASPL', 'NDFRT_FMTSME', 'NEU', 'NIC', 'NOC', 'NUCCPT', 'OMIM', 'OMS', 'PCDS', 'PDQ', 'PNDS', 'PPAC', 'PSY', 'QMR', 'RAM', 'RCD', 'RCDAE', 'RCDSA', 'RCDSY', 'RXNORM', 'SNM', 'SNMI', 'SNOMEDCT_VET', 'SOP', 'SPN', 'ULT', 'UMD', 'USP', 'USPMG', 'UWDA', 'VANDF', 'WHO']
         # MSH = MeSH
-        import_umls(zip_path, terminologies=["ICD10", "SNOMEDCT_US", "CUI", "WHO", "MSH", "HPO", "GO", "DRUGBANK", "NCI"])
+        import_umls(zip_path,
+                    terminologies=["ICD10", "SNOMEDCT_US", "CUI", "WHO", "MSH", "HPO", "GO", "DRUGBANK", "NCI"])
         default_world.save()
 
     output_dir = Path("resources/dictionaries/umls")
@@ -98,6 +102,26 @@ def load_umls_dictionaries():
         print(f"✅ Преобразование завершено")
 
 
+def load_hf_models():
+    """
+    Скачивает модели с Hugging Face заранее, чтобы скрипт не тратил время на это.
+    Токенизатор скачивается отдельно - при запуске скрипта (можно доработать эту часть отдельно).
+    Доступ до https://huggingface.co может быть заблокирован - использовать альтернативные способы.
+    Модели хранятся в ~/.cache/huggingface/hub/
+    """
+    GLiNER.from_pretrained("Ihor/gliner-biomed-bi-large-v1.0")
+    AutoTokenizer.from_pretrained("d4data/biomedical-ner-all")
+    print(f"✅ Модели Hugging Face скачаны")
+
+
+def load_spacy_models():
+    """
+    Скачивает модели spacy
+    """
+    spacy.cli.download("en_core_web_sm")
+    print(f"✅ Модели spacy скачаны")
+
+
 if __name__ == "__main__":
     load_dotenv()
     assert os.environ["APP_ENV"] == "production"
@@ -107,3 +131,5 @@ if __name__ == "__main__":
     check_tables()
     load_dictionaries()
     load_umls_dictionaries()
+    load_hf_models()
+    load_spacy_models()

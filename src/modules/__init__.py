@@ -27,6 +27,9 @@ from .dictionary.who import DictionaryWho
 from .fetcher.pubmed import PubMedFetcher
 from .fetcher.pubmed_central import PubMedCentralFetcher
 from .ner.pos_based_hybrid import PosBasedHybrid
+from .ner.transformer import TransformerGlinerBiomedBiLargeV1
+from .ner.transformer import TransformerBiomedicalNerAll
+from .ner.transformer import TransformerOpenBioner
 from .output.charts import ChartsOutput
 from .output.excel import ExcelOutput
 from .pytest.pytest_module import PytestModule
@@ -35,6 +38,9 @@ register_module(CleanerDatabase)
 register_module(PubMedCentralFetcher)
 register_module(PubMedFetcher)
 register_module(PosBasedHybrid)
+register_module(TransformerGlinerBiomedBiLargeV1)
+register_module(TransformerBiomedicalNerAll)
+register_module(TransformerOpenBioner)
 register_module(PytestModule)
 register_module(DictionaryMesh)
 register_module(DictionarySnomed)

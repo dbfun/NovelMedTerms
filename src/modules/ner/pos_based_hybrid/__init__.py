@@ -6,7 +6,7 @@ from src.modules.ner.ner import Ner, TermDto
 
 class PosBasedHybrid(Ner):
     """
-    Модуль для извлечения медицинских терминов из аннотаций статей
+    Модуль для извлечения медицинских терминов
     с использованием POS-based hybrid подхода.
 
     Метод основан на анализе частей речи (POS-tagging) и фильтрации

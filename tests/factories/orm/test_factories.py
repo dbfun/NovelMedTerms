@@ -51,6 +51,7 @@ class TestTermFactory:
         assert term.term_text.startswith("term_")
         assert term.word_count == 1
         assert term.pos_model == "NN"
+        assert term.label == "Drug"
 
 
 class TestDictionaryFactory:

@@ -22,13 +22,6 @@ stages:
       # Возможен запуск одного модуля несколько раз с разными параметрами.
       # Варианты: "pubmed", "pubmed-central".
       - module: fetcher
-        type: pubmed
-        params:
-          # Строка поиска по PubMed.
-          term: '(((calcification[Abstract]) AND cancer) AND breast) AND 2005:2025[DP]'
-          # Лимит поиска
-          retmax: 10000
-      - module: fetcher
         type: pubmed-central
         params:
           # Строка поиска по PubMed Central.
@@ -36,6 +29,13 @@ stages:
           term: '(((calcification[Abstract]) AND cancer) AND breast) AND 2005:2025[DP]'
           # Лимит поиска
           retmax: 10000
+#      - module: fetcher
+#        type: pubmed
+#        params:
+#          # Строка поиска по PubMed.
+#          term: '(((calcification[Abstract]) AND cancer) AND breast) AND 2005:2025[DP]'
+#          # Лимит поиска
+#          retmax: 10000
 
   - name: Этап извлечения именованных сущностей
     # Возможна работа нескольких модулей.
@@ -61,17 +61,31 @@ stages:
           stopwords:
             - resources/dictionaries/stop-words/AidaStopWords.xlsx
             - resources/dictionaries/stop-words/my_dict.csv
+#      - module: ner
+#        # Варианты: pos-based-hybrid, transformer
+#        type: transformer-gliner-biomed-bi-large-v1.0
+#        params:
+#          labels: ['Disease', 'Drug', 'Anatomy', 'Medical device', 'Laboratory procedure', 'Medical procedure', 'Scientific process', 'Experimental processClinical finding', 'Physiological process', 'Disorder', 'Living organism', 'Chemical substance', 'Gene', 'Pathological condition']
+#          # Список полей из статьи для извлечения именованных сущностей
+#          # Варианты: title, abstract
+#          article_fields:
+#            - title
+#            - abstract
+#          # Списки стоп-слов
+#          stopwords:
+#            - resources/dictionaries/stop-words/AidaStopWords.xlsx
+#            - resources/dictionaries/stop-words/my_dict.csv
 
   - name: Этап поиска в словаре
     # Возможна работа нескольких словарей
-    # Варианты для type: MeSH, SNOMED CT, CUI, DrugBank, GO, HPO, ICD10, NCI, WHO.
+    # Варианты для type: CUI, MeSH, SNOMED CT, DrugBank, GO, HPO, ICD10, NCI, WHO.
     modules:
+      - module: dictionary
+        type: CUI
       - module: dictionary
         type: MeSH
       - module: dictionary
         type: SNOMED CT
-      - module: dictionary
-        type: CUI
       - module: dictionary
         type: DrugBank
       - module: dictionary
@@ -91,11 +105,11 @@ stages:
       - module: output
         type: excel
         params:
-          # Варианты для dictionaries: MeSH, SNOMED CT, CUI, DrugBank, GO, HPO, ICD10, NCI, WHO.
+          # Варианты для dictionaries: CUI, MeSH, SNOMED CT, DrugBank, GO, HPO, ICD10, NCI, WHO.
           dictionaries:
+            - CUI
             - MeSH
             - SNOMED CT
-            - CUI
             - DrugBank
             - GO
             - HPO
@@ -108,11 +122,11 @@ stages:
         params:
           # DPI для вывода графиков
           dpi: 300
-          # Варианты для dictionaries: MeSH, SNOMED CT, CUI, DrugBank, GO, HPO, ICD10, NCI, WHO.
+          # Варианты для dictionaries: CUI, MeSH, SNOMED CT, DrugBank, GO, HPO, ICD10, NCI, WHO.
           dictionaries:
+            - CUI
             - MeSH
             - SNOMED CT
-            - CUI
             - DrugBank
             - GO
             - HPO

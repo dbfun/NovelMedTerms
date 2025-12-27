@@ -86,6 +86,7 @@ class TestHandle:
             end_pos=16,
             surface_form="Cancer treatment",
             pos_model="NN + NN",
+            label="Disease",
             article_field="abstract",
         )
 
@@ -96,6 +97,7 @@ class TestHandle:
             end_pos=37,
             surface_form="effective therapy",
             pos_model="NN + NN",
+            label="Medical procedure",
             article_field="abstract",
         )
 
@@ -106,6 +108,7 @@ class TestHandle:
             end_pos=50,
             surface_form="elderly patients living alone",
             pos_model="NN + NN + NN + NN",
+            label=None,
             article_field="abstract",
         )
 
@@ -123,12 +126,15 @@ class TestHandle:
             assert term[0].term_text == "cancer treatment"
             assert term[0].word_count == 2
             assert term[0].pos_model == "NN + NN"
+            assert term[0].label == "Disease"
             assert term[1].term_text == "effective therapy"
             assert term[1].word_count == 2
             assert term[1].pos_model == "NN + NN"
+            assert term[1].label == "Medical procedure"
             assert term[2].term_text == "elderly patients living alone"
             assert term[2].word_count == 4
             assert term[2].pos_model == "NN + NN + NN + NN"
+            assert term[2].label is None
 
             # Проверка: разметка статей по терминам
             article_term_annotations = db_session.query(ArticleTermAnnotation).filter(

@@ -64,14 +64,14 @@ stages:
 
   - name: Этап поиска в словаре
     # Возможна работа нескольких словарей
-    # Варианты для type: MeSH, SNOMED CT, CUI, DrugBank, GO, HPO, ICD10, NCI, WHO.
+    # Варианты для type: CUI, MeSH, SNOMED CT, DrugBank, GO, HPO, ICD10, NCI, WHO.
     modules:
       - module: dictionary
-        type: MeSH
+        type: CUI
+#      - module: dictionary
+#        type: MeSH
 #      - module: dictionary
 #        type: SNOMED CT
-#      - module: dictionary
-#        type: CUI
 #      - module: dictionary
 #        type: DrugBank
 #      - module: dictionary
@@ -91,11 +91,11 @@ stages:
       - module: output
         type: excel
         params:
-          # Варианты для dictionaries: MeSH, SNOMED CT, CUI, DrugBank, GO, HPO, ICD10, NCI, WHO.
+          # Варианты для dictionaries: CUI, MeSH, SNOMED CT, DrugBank, GO, HPO, ICD10, NCI, WHO.
           dictionaries:
-            - MeSH
+            - CUI
+#            - MeSH
 #            - SNOMED CT
-#            - CUI
 #            - DrugBank
 #            - GO
 #            - HPO
@@ -108,11 +108,11 @@ stages:
         params:
           # DPI для вывода графиков
           dpi: 300
-          # Варианты для dictionaries: MeSH, SNOMED CT, CUI, DrugBank, GO, HPO, ICD10, NCI, WHO.
+          # Варианты для dictionaries: CUI, MeSH, SNOMED CT, DrugBank, GO, HPO, ICD10, NCI, WHO.
           dictionaries:
-            - MeSH
+            - CUI
+#            - MeSH
 #            - SNOMED CT
-#            - CUI
 #            - DrugBank
 #            - GO
 #            - HPO

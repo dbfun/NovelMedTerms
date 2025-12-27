@@ -5,6 +5,14 @@
 import argparse
 import logging
 import os
+
+logger = logging.getLogger("workflow")
+# Разрешаем только оффлайн-режим без скачивания моделей.
+# Важно, чтобы этот код выполнился до момента импорта модулей.
+logger.info('Режим offline для transformer')
+os.environ['HF_DATASETS_OFFLINE'] = '1'
+os.environ['TRANSFORMERS_OFFLINE'] = '1'
+
 from pathlib import Path
 
 import yaml
@@ -12,8 +20,6 @@ from dotenv import load_dotenv
 
 from src.container import container
 from src.workflow import Config
-
-logger = logging.getLogger("workflow")
 
 
 class Workflow:
