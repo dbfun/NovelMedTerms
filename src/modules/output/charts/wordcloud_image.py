@@ -33,8 +33,8 @@ class WordcloudImage():
         """
 
         # Генерация имен файлов
-        wordcloud_img_file = self.path_generator("wordcloud.png")
-        wordcloud_csv_file = self.path_generator("wordcloud.csv")
+        wordcloud_img_file = self.path_generator("Облако терминов.png")
+        wordcloud_csv_file = self.path_generator("Облако терминов.csv")
 
         # Получение результатов
         results = self._fetch_results(min_word_count, max_terms)

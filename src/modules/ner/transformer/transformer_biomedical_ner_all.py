@@ -65,7 +65,7 @@ class TransformerBiomedicalNerAll(Transformer):
         return ret
 
     def _add_term_if_valid(self, ret: list[TermDto], ent: DistilBertEntity, text: str):
-        surface_form=text[ent['start']:ent['end']].strip()
+        surface_form = text[ent['start']:ent['end']].strip()
 
         # Ранний пропуск, если является стоп-словом.
         if surface_form.lower() in self.stop_words:

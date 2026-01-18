@@ -8,7 +8,7 @@ from src.orm.database import BaseModel
 
 # Обход проблемы циклического импорта:
 if TYPE_CHECKING:
-    from src.orm.models import TermDictionaryRef, ArticleTermAnnotation, Dictionary
+    from src.orm.models import TermDictionaryRef, ArticleTermAnnotation, Dictionary, Candidate
 
 
 class Term(BaseModel):
@@ -35,6 +35,13 @@ class Term(BaseModel):
         secondary="term_dictionary_ref",
         back_populates="terms",
         overlaps="term_dictionary_refs"
+    )
+
+    candidates: Mapped[list["Candidate"]] = relationship(
+        "Candidate",
+        back_populates="term",
+        uselist=False,
+        cascade="all, delete-orphan"
     )
 
     __table_args__ = (

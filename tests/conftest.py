@@ -116,4 +116,5 @@ def fake_experiment(tmp_path):
         name="Pytest fake experiment",
         description="Fake description",
         directory=str(tmp_path),
+        author="Fake author"
     )

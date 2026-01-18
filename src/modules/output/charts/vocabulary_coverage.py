@@ -1,6 +1,10 @@
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+import statsmodels.api as sm
+from scipy.stats import pearsonr, kendalltau
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -13,20 +17,26 @@ class VocabularyCoverage():
     Генерация графика "Количество терминов в PubMed и их покрытие словарями"
     """
 
-    def __init__(self, session: Session, dpi: int, dictionaries: list[Dictionary]):
+    def __init__(self, session: Session, dpi: int, dictionaries: list[Dictionary], path_generator):
         self.session = session
         self.dpi = dpi
         self.dictionaries = dictionaries
+        self.path_generator = path_generator
 
-    def handle(self, output_file_path: Path) -> None:
+    def handle(self) -> list[Path]:
         """
         Запуск генерации
-
-        Args:
-            output_file_path: путь к файлу для сохранения результатов
         """
         results = self._fetch_results()
+
+        # Генерация имен файлов
+        output_file_path = self.path_generator("Количество извлеченных терминов их покрытие словарями.png")
+        output_file_path_facet = self.path_generator("Динамика покрытия извлеченных терминов словарями.png")
+
         self._generate_chart(results, output_file_path)
+        self._generate_chart_facet(results, output_file_path_facet)
+
+        return [output_file_path]
 
     def _fetch_results(self) -> list[dict]:
         """
@@ -87,7 +97,7 @@ class VocabularyCoverage():
         # Делаем маппинг данных на структуру, подходящую для построения диаграммы.
         for row in rows:
             result = {
-                "year": row.year,
+                "year": int(row.year),
                 "total_count": row.total_count,
                 "in_dict": {}
             }
@@ -95,20 +105,20 @@ class VocabularyCoverage():
                 # Создаем словарь в формате "название словаря": "количество терминов"
                 result["in_dict"][dict_name] = row[table_alias]
 
-                ret.append(result)
-
             ret.append(result)
 
         return ret
 
     def _generate_chart(self, results: list[dict], output_file_path: Path) -> None:
+        # Пример results - с разбивкой по годам:
+        # [{'year': 2005, 'total_count': 71, 'in_dict': {'CUI': 55, 'MeSH': 45, 'SNOMED CT': 54, 'DrugBank': 11, 'GO': 26, 'HPO': 40, 'ICD10': 33, 'NCI': 49, 'WHO': 26}}, ... ]
+
         disable_logging()
 
         years = [d["year"] for d in results]
         total = [d["total_count"] for d in results]
 
         plt.figure(figsize=(12, 6))
-        plt.title("Количество терминов в PubMed и их покрытие словарями")
         plt.xticks(years)
 
         # Левая ось: общее количество терминов
@@ -158,3 +168,109 @@ class VocabularyCoverage():
         plt.close()
 
         enable_logging()
+
+    def _generate_chart_facet(self, results: list[dict], output_file_path: Path) -> None:
+        disable_logging()
+
+        df = self._prepare_df(results)
+
+        g = sns.FacetGrid(
+            df,
+            col="dict_name",
+            col_wrap=5,
+            height=3.5,
+            sharey=False
+        )
+
+        # Основная линия (проценты по годам)
+        g.map_dataframe(
+            sns.scatterplot,
+            x="year",
+            y="percent",
+            marker="o"
+        )
+
+        g.set_axis_labels("Год", "Покрытие, %")
+        g.set_titles("{col_name}")
+
+        # Добавляем регрессию и статистику
+        self._add_trend_and_stats(g, df)
+
+        plt.tight_layout()
+        plt.savefig(output_file_path, dpi=self.dpi, bbox_inches="tight")
+        plt.close()
+
+        enable_logging()
+
+    def _prepare_df(self, results: list[dict]) -> pd.DataFrame:
+        rows = []
+
+        for result in results:
+            year = int(result["year"])
+            total = result["total_count"]
+
+            if total == 0:
+                continue
+
+            for dict_name, term_count in result["in_dict"].items():
+                percent = term_count / total * 100
+                rows.append({
+                    "year": year,
+                    "dict_name": dict_name,
+                    "percent": percent,
+                })
+
+        df = pd.DataFrame(rows)
+        return df
+
+    def _add_trend_and_stats(self, g: sns.FacetGrid, df: pd.DataFrame) -> None:
+        for ax, dict_name in zip(g.axes.flatten(), g.col_names):
+            df_dict = df[df["dict_name"] == dict_name]
+
+            if len(df_dict) < 2:
+                continue
+
+            # Линейная регрессия: percent ~ year
+            X = sm.add_constant(df_dict["year"])
+            y = df_dict["percent"]
+            model = sm.OLS(y, X).fit()
+
+            slope = model.params["year"]
+            intercept = model.params["const"]
+
+            # Корреляция Пирсона
+            r, _ = pearsonr(df_dict["year"], df_dict["percent"])
+
+            # Манн–Кендалл
+            tau, p_value = kendalltau(df_dict["year"], df_dict["percent"])
+
+            # Цвет по значимости
+            color = "red" if p_value < 0.05 else "gray"
+
+            # Линия регрессии
+            years_sorted = df_dict["year"].sort_values()
+            ax.plot(
+                years_sorted,
+                intercept + slope * years_sorted,
+                color=color,
+                linewidth=2
+            )
+
+            # Текст со статистикой
+            ax.text(
+                0.05,
+                0.95,
+                f"y={slope:.3f}x+{intercept:.2f}\n"
+                f"r={r:.2f}\n"
+                f"τ={tau:.2f}\n"
+                f"p={p_value:.3f}",
+                transform=ax.transAxes,
+                verticalalignment="top",
+                fontsize=8,
+                bbox=dict(
+                    boxstyle="round,pad=0.3",
+                    facecolor="white",
+                    alpha=0.6
+                ),
+                color=color
+            )

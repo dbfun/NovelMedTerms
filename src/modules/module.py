@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
+from src.orm.models import Dictionary
 from src.orm.models.module import Module as DbModule
 from src.workflow import Experiment
 
@@ -60,3 +61,24 @@ class Module(ABC):
             session.flush()
 
         return module.id
+
+    def _load_dictionaries(self, session: Session, dict_names: set[str]) -> list[Dictionary]:
+        """
+        Получение списка словарей из БД для дальнейшей подстановки в SQL.
+
+        Args:
+            session: сессия SQLAlchemy
+            dict_names: список названий словарей
+
+        Returns:
+            Список словарей из БД
+        """
+        dictionaries: list[Dictionary] = session.query(Dictionary).filter(Dictionary.name.in_(dict_names)).all()
+
+        loaded_dictionaries = set([obj.name for obj in dictionaries])
+
+        if dict_names != loaded_dictionaries:
+            raise RuntimeError(
+                f"Передан неверный список словарей: {dict_names}, загружены: {loaded_dictionaries}")
+
+        return dictionaries

@@ -39,28 +39,25 @@ class PosModelByYear():
         pos_models_by_year = self._fetch_pos_models_by_year(top_pos_models)
 
         # Генерация имен файлов
-        file_pos_model_by_year_abs = self.path_generator("pos_model_by_year_abs.png")
-        file_pos_model_by_year_rel = self.path_generator("pos_model_by_year_rel.png")
-        file_pos_model_by_year_facet = self.path_generator("pos_model_by_year_facet.png")
+        file_pos_model_by_year_abs = self.path_generator("Количество POS-структур по годам, кроме униграмм.png")
+        file_pos_model_by_year_rel = self.path_generator("Доля POS-структур по годам, кроме униграмм.png")
+        file_pos_model_by_year_facet = self.path_generator("Динамика POS-структур по годам, кроме униграмм.png")
 
         # Создание графиков
         self._generate_chart_pos_model_by_year_abs(
             pos_models_by_year,
             total_pos_models_by_year,
-            "Динамика распределения POS-структур по годам, кроме униграмм",
             file_pos_model_by_year_abs
         )
         self._generate_chart_pos_model_by_year_rel(
             pos_models_by_year,
             total_pos_models_by_year,
-            "Доля POS-структур по годам, кроме униграмм",
             file_pos_model_by_year_rel
         )
 
         self._generate_chart_pos_model_by_year_facet(
             pos_models_by_year,
             total_pos_models_by_year,
-            "Динамика POS-структур по годам, кроме униграмм",
             file_pos_model_by_year_facet
         )
 
@@ -134,7 +131,7 @@ class PosModelByYear():
         return self.session.execute(sql, params).mappings().all()
 
     def _generate_chart_pos_model_by_year_abs(self, pos_models_by_year: list, total_pos_models_by_year: list,
-                                              title: str, output_file_path: Path) -> None:
+                                              output_file_path: Path) -> None:
         disable_logging()
 
         # DataFrame с POS-моделями
@@ -169,7 +166,6 @@ class PosModelByYear():
         ax.set_ylim(0, max(max_area_value, max_total_value) * 1.05)
 
         # Названия
-        plt.title(title)
         plt.xlabel("Год")
         plt.ylabel("Количество")
 
@@ -184,7 +180,7 @@ class PosModelByYear():
         enable_logging()
 
     def _generate_chart_pos_model_by_year_rel(self, pos_models_by_year: list, total_pos_models_by_year: list,
-                                              title: str, output_file_path: Path):
+                                              output_file_path: Path):
         disable_logging()
 
         # Создание DataFrames
@@ -216,7 +212,6 @@ class PosModelByYear():
         ax.set_xticks(df_percent.index)
         ax.set_xticklabels(df_percent.index.astype(int))
 
-        plt.title(title)
         plt.xlabel("Год")
         plt.ylabel("Доля, %")
         plt.legend(title="POS-модель", bbox_to_anchor=(1.05, 1), loc="upper left")
@@ -230,7 +225,7 @@ class PosModelByYear():
         enable_logging()
 
     def _generate_chart_pos_model_by_year_facet(self, pos_models_by_year: list, total_pos_models_by_year: list,
-                                                title: str, output_file_path: Path):
+                                                output_file_path: Path):
         """
         Динамика POS-структур по годам, кроме униграмм
 
@@ -323,7 +318,6 @@ class PosModelByYear():
                 color=color
             )
 
-        g.figure.suptitle(title, fontsize=16)
         plt.tight_layout()
         plt.subplots_adjust(top=0.90)
         plt.savefig(output_file_path, dpi=self.dpi)

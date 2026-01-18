@@ -30,6 +30,7 @@ from .ner.pos_based_hybrid import PosBasedHybrid
 from .ner.transformer import TransformerGlinerBiomedBiLargeV1
 from .ner.transformer import TransformerBiomedicalNerAll
 from .ner.transformer import TransformerOpenBioner
+from .candidate.emerging_term_detection import EmergingTermDetection
 from .output.charts import ChartsOutput
 from .output.excel import ExcelOutput
 from .pytest.pytest_module import PytestModule
@@ -41,6 +42,7 @@ register_module(PosBasedHybrid)
 register_module(TransformerGlinerBiomedBiLargeV1)
 register_module(TransformerBiomedicalNerAll)
 register_module(TransformerOpenBioner)
+register_module(EmergingTermDetection)
 register_module(PytestModule)
 register_module(DictionaryMesh)
 register_module(DictionarySnomed)

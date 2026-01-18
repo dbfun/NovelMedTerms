@@ -7,3 +7,4 @@ from .dictionary import Dictionary
 from .module import Module
 from .term import Term
 from .term_dictionary_ref import TermDictionaryRef
+from .candidate import Candidate
