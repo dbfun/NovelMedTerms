@@ -49,7 +49,7 @@ class ChartsOutput(Output):
             output_files = chart3.handle(10)
             self._print_results(PosModelByYear, output_files)
 
-            # Генерация "Динамика появления терминов-кандидатов по годам"
+            # Генерация "Траектория появления терминов-кандидатов по годам"
             chart4 = CandidatesByYear(session, self.dpi, self._generate_output_file_path)
             output_files = chart4.handle()
             self._print_results(CandidatesByYear, output_files)

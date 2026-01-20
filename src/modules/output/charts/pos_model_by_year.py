@@ -274,7 +274,7 @@ class PosModelByYear():
         top_models = df["pos_model"].unique().tolist()
 
         # Small multiples с Seaborn
-        g = sns.FacetGrid(df, col="pos_model", col_wrap=5, height=3.5, sharey=False)
+        g = sns.FacetGrid(df, col="pos_model", col_wrap=3, height=3.5, sharey=False)
         g.map_dataframe(sns.scatterplot, x="year", y="relative")
         g.set_axis_labels("Год", "Доля, %")
         g.set_titles(col_template="POS-структура = {col_name}")

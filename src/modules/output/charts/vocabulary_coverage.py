@@ -177,7 +177,7 @@ class VocabularyCoverage():
         g = sns.FacetGrid(
             df,
             col="dict_name",
-            col_wrap=5,
+            col_wrap=3,
             height=3.5,
             sharey=False
         )

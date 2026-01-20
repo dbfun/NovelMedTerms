@@ -10,7 +10,7 @@ from src.helper import disable_logging, enable_logging, all_years_range
 
 class CandidatesByYear():
     """
-    Динамика появления терминов-кандидатов по годам.
+    Траектория появления терминов-кандидатов по годам.
     """
 
     def __init__(self, session: Session, dpi: int, path_generator):
@@ -33,7 +33,7 @@ class CandidatesByYear():
         all_years = all_years_range(self.session)
 
         # Каталог для хранения результатов
-        candidates_dir = self.path_generator("Динамика появления терминов-кандидатов")
+        candidates_dir = self.path_generator("Траектория появления терминов-кандидатов")
         candidates_dir.mkdir(parents=True, exist_ok=True)
 
         output_files = []
