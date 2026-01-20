@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import pandas as pd
 import seaborn as sns
 import statsmodels.api as sm
@@ -317,6 +318,9 @@ class PosModelByYear():
                 bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.5),
                 color=color
             )
+
+        for ax in g.axes.flatten():
+            ax.xaxis.set_major_locator(mpl.ticker.MaxNLocator(integer=True))
 
         plt.tight_layout()
         plt.subplots_adjust(top=0.90)

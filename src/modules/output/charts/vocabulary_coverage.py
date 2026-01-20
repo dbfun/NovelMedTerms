@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import pandas as pd
 import seaborn as sns
 import statsmodels.api as sm
@@ -195,6 +196,9 @@ class VocabularyCoverage():
 
         # Добавляем регрессию и статистику
         self._add_trend_and_stats(g, df)
+
+        for ax in g.axes.flatten():
+            ax.xaxis.set_major_locator(mpl.ticker.MaxNLocator(integer=True))
 
         plt.tight_layout()
         plt.savefig(output_file_path, dpi=self.dpi, bbox_inches="tight")
