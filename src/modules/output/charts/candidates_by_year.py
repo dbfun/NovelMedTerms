@@ -48,9 +48,8 @@ class CandidatesByYear():
             # Создание графиков
             self._generate_chart(term, all_years, output_file_path)
             meta_description.append({
-                'id': term['id'],
-                'filename': filename,
-                'term_text': term['term_text']
+                **term,
+                'filename': filename
             })
 
         self._save_meta(meta_description, candidates_dir / 'meta.csv')
@@ -129,13 +128,23 @@ class CandidatesByYear():
         )
 
     def _save_meta(self, meta_description: list[dict], csv_file: Path) -> None:
+        columns = [
+            'id',
+            'filename',
+            'term_text',
+            'word_count',
+            'first_year',
+            'first_stable_year',
+            'last_year',
+            'max_consecutive',
+            'growth',
+            'total_mentions',
+        ]
+
         with open(csv_file, 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
-            writer.writerow(['id', 'filename', 'term_text'])
+            # Заголовок
+            writer.writerow(columns)
 
             for item in meta_description:
-                writer.writerow([
-                    item['id'],
-                    item['filename'],
-                    item['term_text']
-                ])
+                writer.writerow([item[col] for col in columns])
