@@ -2,7 +2,6 @@ import datetime
 import logging
 import time
 from typing import Any
-from urllib.error import HTTPError
 
 from Bio import Entrez, Medline
 from dateutil import parser
@@ -69,7 +68,7 @@ class PubMedCentralFetcher(Module):
                 # Повторная загрузка при возникновении ошибки.
                 try:
                     self._import_batch(batch_ids, session)
-                except HTTPError as e:
+                except Exception:
                     self.logger.warning(f"Попытка повторной загрузки")
                     time.sleep(30)
                     self._import_batch(batch_ids, session)
