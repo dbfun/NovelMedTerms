@@ -4,7 +4,6 @@
 /tests/.env
 /tmp/
 /debug.py
-/launch.sh
 /*.log
 /prof.out
 __pycache__
