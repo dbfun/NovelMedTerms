@@ -1,3 +1,4 @@
+import csv
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -36,14 +37,23 @@ class CandidatesByYear():
         candidates_dir.mkdir(parents=True, exist_ok=True)
 
         output_files = []
+        meta_description = []
 
-        for result in results:
+        for term in results:
             # Генерация имен файлов
-            output_file_path = candidates_dir / (str(result['id']) + ".png")
+            filename = str(term['id']) + ".png"
+            output_file_path = candidates_dir / filename
             output_files.append(output_file_path)
 
             # Создание графиков
-            self._generate_chart(result, all_years, output_file_path)
+            self._generate_chart(term, all_years, output_file_path)
+            meta_description.append({
+                'id': term['id'],
+                'filename': filename,
+                'term_text': term['term_text']
+            })
+
+        self._save_meta(meta_description, candidates_dir / 'meta.csv')
 
         return output_files
 
@@ -117,3 +127,15 @@ class CandidatesByYear():
             alpha=0.2,
             label='Минимальная устойчивость'
         )
+
+    def _save_meta(self, meta_description: list[dict], csv_file: Path) -> None:
+        with open(csv_file, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            writer.writerow(['id', 'filename', 'term_text'])
+
+            for item in meta_description:
+                writer.writerow([
+                    item['id'],
+                    item['filename'],
+                    item['term_text']
+                ])
