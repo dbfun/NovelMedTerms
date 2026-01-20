@@ -1,9 +1,13 @@
 import datetime
 import logging
+import time
+from typing import Any
+from urllib.error import HTTPError
 
 from Bio import Entrez, Medline
 from dateutil import parser
 from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.orm import Session
 
 from src.config.ncbi import NcbiConfig
 from src.modules.module import Module, ModuleInfo
@@ -61,39 +65,49 @@ class PubMedCentralFetcher(Module):
             for i in range(0, len(id_list), self.BATCH_SIZE):
                 batch_ids = id_list[i:i + self.BATCH_SIZE]
                 self.logger.debug(f"Пакетная загрузка: {i}-{min(i + self.BATCH_SIZE, len(id_list))} из {len(id_list)}")
-                with Entrez.efetch(db="pmc", id=batch_ids, rettype="medline", retmode="text") as fetch_handle:
-                    records = Medline.parse(fetch_handle)
-                    for rec in records:
-                        try:
-                            # В ORM есть дополнительные валидации, поэтому пишем не напрямую в БД,
-                            # а предварительно создаем модель
-                            article = Article(
-                                pmcid=rec.get("PMC"),
-                                title=rec.get("TI"),
-                                abstract=rec.get("AB"),
-                                authors=", ".join(rec.get("AU", [])),
-                                pubdate=self._parse_pubdate(rec.get("DP")),
-                                author_keywords=rec.get("OT"),
-                                publication_type=rec.get("PT"),
-                            )
 
-                            stmt = insert(Article).values(
-                                pmcid=article.pmcid,
-                                title=article.title,
-                                abstract=article.abstract,
-                                authors=article.authors,
-                                pubdate=article.pubdate,
-                                author_keywords=article.author_keywords,
-                                publication_type=article.publication_type,
-                            ).on_conflict_do_nothing(index_elements=["pmcid"])
-
-                            session.execute(stmt)
-
-                        except ValueError as e:
-                            self.logger.warning(f"Пропускаем запись: {rec.get("PMC")} - {e}")
-                            continue
+                # Повторная загрузка при возникновении ошибки.
+                try:
+                    self._import_batch(batch_ids, session)
+                except HTTPError as e:
+                    self.logger.warning(f"Попытка повторной загрузки")
+                    time.sleep(30)
+                    self._import_batch(batch_ids, session)
 
                 session.commit()
+
+    def _import_batch(self, batch_ids: list[Any], session: Session):
+        with Entrez.efetch(db="pmc", id=batch_ids, rettype="medline", retmode="text") as fetch_handle:
+            records = Medline.parse(fetch_handle)
+            for rec in records:
+                try:
+                    # В ORM есть дополнительные валидации, поэтому пишем не напрямую в БД,
+                    # а предварительно создаем модель
+                    article = Article(
+                        pmcid=rec.get("PMC"),
+                        title=rec.get("TI"),
+                        abstract=rec.get("AB"),
+                        authors=", ".join(rec.get("AU", [])),
+                        pubdate=self._parse_pubdate(rec.get("DP")),
+                        author_keywords=rec.get("OT"),
+                        publication_type=rec.get("PT"),
+                    )
+
+                    stmt = insert(Article).values(
+                        pmcid=article.pmcid,
+                        title=article.title,
+                        abstract=article.abstract,
+                        authors=article.authors,
+                        pubdate=article.pubdate,
+                        author_keywords=article.author_keywords,
+                        publication_type=article.publication_type,
+                    ).on_conflict_do_nothing(index_elements=["pmcid"])
+
+                    session.execute(stmt)
+
+                except ValueError as e:
+                    self.logger.warning(f"Пропускаем запись: {rec.get("PMC")} - {e}")
+                    continue
 
     @staticmethod
     def _parse_pubdate(dp_value: str | None) -> datetime.date | None:
