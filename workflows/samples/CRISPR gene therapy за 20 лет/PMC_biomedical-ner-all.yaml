@@ -1,0 +1,153 @@
+# Информация об эксперименте.
+experiment:
+  name: PMC + biomedical-ner-all
+  description: "CRISPR на PMC с использованием трансформера biomedical-ner-all"
+  directory: "workflows/CRISPR gene therapy за 20 лет/PMC_biomedical-ner-all"
+  author: Вагун И.В.
+
+# Этапы рабочего процесса в порядке их запуска из workflow.py.
+stages:
+
+  # Можно пропустить, если статьи уже были загружены ранее с теми же параметрами.
+  - name: Этап импорта статей
+    modules:
+      # Очистка базы статей из прошлого запуска.
+      - module: cleaner
+        type: database
+        params:
+          # Список моделей для очистки.
+          models:
+            - Article
+      # Импорт статей.
+      # Возможен запуск одного модуля несколько раз с разными параметрами.
+      # Варианты: "pubmed", "pubmed-central".
+      - module: fetcher
+        type: pubmed-central
+        params:
+          # Строка поиска по PubMed Central.
+          # Документация: https://pmc.ncbi.nlm.nih.gov/about/userguide/
+          term: >
+            (
+              CRISPR[Title] OR CRISPR[Abstract]
+            )
+            AND
+            (
+              "gene therapy"[Title] OR "gene therapy"[Abstract] OR
+              "genome editing"[Title] OR "genome editing"[Abstract]
+            )
+            AND 2005:2025[DP]
+          # Лимит поиска
+          retmax: 10000
+
+  - name: Этап извлечения именованных сущностей
+    # Возможна работа нескольких модулей.
+    # Есть привязка термина к модулю, который его извлек.
+    # Если термин извлечен несколькими модулями, сохраняется привязка к ним всем.
+    modules:
+      # Очистка базы данных от прошлого запуска
+      - module: cleaner
+        type: database
+        params:
+          models:
+            - Term
+      - module: ner
+        # Варианты: pos-based-hybrid, transformer
+        type: transformer-biomedical-ner-all
+        params:
+          # Список полей из статьи для извлечения именованных сущностей
+          # Варианты: title, abstract
+          article_fields:
+            - title
+            - abstract
+          # Списки стоп-слов
+          stopwords:
+            - resources/dictionaries/stop-words/AidaStopWords.xlsx
+            - resources/dictionaries/stop-words/my_dict.csv
+
+  - name: Этап поиска в словаре
+    # Возможна работа нескольких словарей
+    # Варианты для type: CUI, MeSH, SNOMED CT, DrugBank, GO, HPO, ICD10, NCI, WHO.
+    modules:
+      - module: dictionary
+        type: CUI
+      - module: dictionary
+        type: MeSH
+      - module: dictionary
+        type: SNOMED CT
+      - module: dictionary
+        type: DrugBank
+      - module: dictionary
+        type: GO
+      - module: dictionary
+        type: HPO
+      - module: dictionary
+        type: ICD10
+      - module: dictionary
+        type: NCI
+      - module: dictionary
+        type: WHO
+
+  - name: Этап поиска терминов-кандидатов
+    modules:
+      # Очистка терминов-кандидатов из прошлого запуска.
+      - module: cleaner
+        type: database
+        params:
+          # Список моделей для очистки.
+          models:
+            - Candidate
+      - module: candidate
+        type: emerging-term-detection
+        params:
+          # Минимальная устойчивость - количество лет подряд с ненулевой частотой
+          min_years_present: 2
+          # Минимальный рост
+          min_growth: 1.5
+          # Минимальное количество упоминаний
+          min_total_mentions: 10
+          # Варианты для dictionaries: CUI, MeSH, SNOMED CT, DrugBank, GO, HPO, ICD10, NCI, WHO.
+          dictionaries:
+            - CUI
+            - MeSH
+            - SNOMED CT
+            - DrugBank
+            - GO
+            - HPO
+            - ICD10
+            - NCI
+            - WHO
+
+  - name: Этап вывода результатов
+    modules:
+      # Запись в Excel всех извлеченных терминов по годам с указанием вхождения в словари
+      - module: output
+        type: excel
+        params:
+          # Варианты для dictionaries: CUI, MeSH, SNOMED CT, DrugBank, GO, HPO, ICD10, NCI, WHO.
+          dictionaries:
+            - CUI
+            - MeSH
+            - SNOMED CT
+            - DrugBank
+            - GO
+            - HPO
+            - ICD10
+            - NCI
+            - WHO
+      # Построение диаграмм по извлеченным терминам
+      - module: output
+        type: charts
+        params:
+          # DPI для вывода графиков
+          dpi: 300
+          # Варианты для dictionaries: CUI, MeSH, SNOMED CT, DrugBank, GO, HPO, ICD10, NCI, WHO.
+          dictionaries:
+            - CUI
+            - MeSH
+            - SNOMED CT
+            - DrugBank
+            - GO
+            - HPO
+            - ICD10
+            - NCI
+            - WHO
