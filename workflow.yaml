@@ -99,6 +99,36 @@ stages:
       - module: dictionary
         type: WHO
 
+  - name: Этап поиска терминов-кандидатов
+    modules:
+      # Очистка терминов-кандидатов из прошлого запуска.
+      - module: cleaner
+        type: database
+        params:
+          # Список моделей для очистки.
+          models:
+            - Candidate
+      - module: candidate
+        type: emerging-term-detection
+        params:
+          # Минимальная устойчивость - количество лет подряд с ненулевой частотой
+          min_years_present: 2
+          # Минимальный рост
+          min_growth: 1.5
+          # Минимальное количество упоминаний
+          min_total_mentions: 10
+          # Варианты для dictionaries: CUI, MeSH, SNOMED CT, DrugBank, GO, HPO, ICD10, NCI, WHO.
+          dictionaries:
+            - CUI
+            - MeSH
+            - SNOMED CT
+            - DrugBank
+            - GO
+            - HPO
+            - ICD10
+            - NCI
+            - WHO
+
   - name: Этап вывода результатов
     modules:
       # Запись в Excel всех извлеченных терминов по годам с указанием вхождения в словари
