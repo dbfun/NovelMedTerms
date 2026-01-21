@@ -31,7 +31,7 @@ class VocabularyCoverage():
         results = self._fetch_results()
 
         # Генерация имен файлов
-        output_file_path = self.path_generator("Количество извлеченных терминов их покрытие словарями.png")
+        output_file_path = self.path_generator("Количество извлеченных терминов и их покрытие словарями.png")
         output_file_path_facet = self.path_generator("Динамика покрытия извлеченных терминов словарями.png")
 
         self._generate_chart(results, output_file_path)
