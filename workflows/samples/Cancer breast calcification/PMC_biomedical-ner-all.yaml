@@ -1,8 +1,8 @@
 # Информация об эксперименте.
 experiment:
-  name: PMC + pos-based-hybrid
-  description: "breast + calcification + cancer на PMC с использованием pos-based-hybrid"
-  directory: "workflows/Cancer breast calcification за 20 лет/PMC_pos-based-hybrid"
+  name: PMC + biomedical-ner-all
+  description: "breast + calcification + cancer на PMC с использованием трансформера biomedical-ner-all"
+  directory: "workflows/Cancer breast calcification/PMC_biomedical-ner-all"
   author: Вагун И.В.
 
 # Этапы рабочего процесса в порядке их запуска из workflow.py.
@@ -43,7 +43,7 @@ stages:
             - Term
       - module: ner
         # Варианты: pos-based-hybrid, transformer
-        type: pos-based-hybrid
+        type: transformer-biomedical-ner-all
         params:
           # Список полей из статьи для извлечения именованных сущностей
           # Варианты: title, abstract

@@ -1,8 +1,8 @@
 # Информация об эксперименте.
 experiment:
-  name: PMC + biomedical-ner-all
-  description: "CRISPR gene therapy на PMC с использованием трансформера biomedical-ner-all"
-  directory: "workflows/CRISPR gene therapy за 20 лет/PMC_biomedical-ner-all"
+  name: PMC + OpenBioNER
+  description: "CRISPR gene therapy на PMC с использованием трансформера OpenBioNER"
+  directory: "workflows/CRISPR gene therapy/PMC_OpenBioNER"
   author: Вагун И.В.
 
 # Этапы рабочего процесса в порядке их запуска из workflow.py.
@@ -52,7 +52,7 @@ stages:
             - Term
       - module: ner
         # Варианты: pos-based-hybrid, transformer
-        type: transformer-biomedical-ner-all
+        type: transformer-open-bioner
         params:
           # Список полей из статьи для извлечения именованных сущностей
           # Варианты: title, abstract

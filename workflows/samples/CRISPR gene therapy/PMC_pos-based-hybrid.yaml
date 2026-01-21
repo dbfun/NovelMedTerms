@@ -1,8 +1,8 @@
 # Информация об эксперименте.
 experiment:
-  name: PMC + biomedical-ner-all
-  description: "breast + calcification + cancer на PMC с использованием трансформера biomedical-ner-all"
-  directory: "workflows/Cancer breast calcification за 20 лет/PMC_biomedical-ner-all"
+  name: PMC + pos-based-hybrid
+  description: "CRISPR gene therapy на PMC с использованием pos-based-hybrid"
+  directory: "workflows/CRISPR gene therapy/PMC_pos-based-hybrid"
   author: Вагун И.В.
 
 # Этапы рабочего процесса в порядке их запуска из workflow.py.
@@ -26,7 +26,16 @@ stages:
         params:
           # Строка поиска по PubMed Central.
           # Документация: https://pmc.ncbi.nlm.nih.gov/about/userguide/
-          term: '(((calcification[Abstract]) AND cancer) AND breast) AND 2005:2025[DP]'
+          term: >
+            (
+              CRISPR[Title] OR CRISPR[Abstract]
+            )
+            AND
+            (
+              "gene therapy"[Title] OR "gene therapy"[Abstract] OR
+              "genome editing"[Title] OR "genome editing"[Abstract]
+            )
+            AND 2005:2025[DP]
           # Лимит поиска
           retmax: 10000
 
@@ -43,7 +52,7 @@ stages:
             - Term
       - module: ner
         # Варианты: pos-based-hybrid, transformer
-        type: transformer-biomedical-ner-all
+        type: pos-based-hybrid
         params:
           # Список полей из статьи для извлечения именованных сущностей
           # Варианты: title, abstract
