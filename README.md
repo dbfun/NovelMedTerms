@@ -17,6 +17,10 @@
 
 ![statistics.xlsx.png](assets/excel/statistics.xlsx.png)
 
+Пример траектории термина:
+
+![term_trajectory.png](assets/charts/term_trajectory.png)
+
 ## Системные требования
 
 Для работы проекта требуется:
